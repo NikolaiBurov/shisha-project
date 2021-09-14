@@ -8,16 +8,6 @@ use Illuminate\Http\JsonResponse;
 
 class ApiController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
 
     public function getAllFlavours(Request $request) : ?JsonResponse
     {   $flavours = Flavour::all();
@@ -28,18 +18,17 @@ class ApiController extends Controller
         return new JsonResponse($response);
     }
 
-    /** 
+    /**
      * @var category_id Request int
      * @return JsonResponse
      * Returns all products by given category id
      */
     public function getAllByCategory(Request $request) :?JsonResponse
-    {   
-        $category_id  = $request->get('id');
+    {
+        $category_id  = $request->get('category_id');
 
-        $products = Flavour::where('category_id', 1)
+        $products = Flavour::where('category_id', $category_id)
                ->orderBy('title', 'desc')
-               ->take(10)
                ->get();
 
 

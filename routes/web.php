@@ -18,8 +18,7 @@ use Illuminate\Support\Facades\Route;
 // });
 
 Route::get('/', [App\Http\Controllers\HomeController::class, 'forbidden'])->name('forbidden');
-Route::get('/get-all-flavours', [App\Http\Controllers\ApiController::class, 'getAllFlavours']);
-Route::get('/get-by-category', [App\Http\Controllers\ApiController::class, 'getAllByCategory']);
+
 //Auth::routes();
 
 
