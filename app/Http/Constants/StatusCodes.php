@@ -8,7 +8,8 @@ class StatusCodes
             return (object)[
                 '200' => [
                     'OK' => 'OK',
-                    'non_existent_product' => 'There is no product with such id'
+                    'non_existent_product' => 'There is no product with such id',
+                    'empty_categories' => 'Categories list is empty'
                 ],
                 '404' => 'NotFound',
                 '400' => 'Bad request',

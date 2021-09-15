@@ -7,6 +7,8 @@ use  Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
 use App\Http\Services\ImageService;
 use App\Http\Constants\StatusCodes;
+use TCG\Voyager\Models\Category;
+
 class ApiController extends Controller
 {
 
@@ -87,6 +89,29 @@ class ApiController extends Controller
 
         return new JsonResponse($response);
 
+
+    }
+
+    public function getAllCategories(Request  $request): JsonResponse
+    {
+
+        /** @var TYPE_NAME $response */
+        $response = [];
+
+        $categories = Category::all();
+
+        if(empty($categories)){
+            $response = [
+                'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
+                'data' => $this->status_codes->postRequests()->{"200"}{'empty_categories'}
+            ];
+            return new JsonResponse($response);
+        }
+
+
+        $response = ['status' => (new Response())->status() ,'data'=> $categories];
+
+        return new JsonResponse($response);
 
     }
 }
