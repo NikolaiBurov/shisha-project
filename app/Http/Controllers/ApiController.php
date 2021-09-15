@@ -72,6 +72,13 @@ class ApiController extends Controller
             ->orderBy('title', 'desc')
             ->first();
 
+        if(empty($product)){
+            $response = [
+                'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
+                'data' => $this->status_codes->postRequests()->{"200"}{'non_existent_product'}
+            ];
+            return new JsonResponse($response);
+        }
         if ($product['image']) {
             $product['image'] = ImageService::absolutePath($product, $request);
         }
