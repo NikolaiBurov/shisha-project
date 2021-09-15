@@ -6,13 +6,20 @@ use Illuminate\Http\Request;
 use  Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
 use App\Http\Services\ImageService;
-
+use App\Http\Constants\StatusCodes;
 class ApiController extends Controller
 {
 
+    /**
+     * @var StatusCodes
+     */
+    private $status_codes;
+
+    public  function  __construct(){
+        $this->status_codes = (new StatusCodes());
+    }
     public function getAllFlavours(Request $request) : ?JsonResponse
     {   $flavours = Flavour::all();
-
 
         $response = ['status' => (new Response())->status() ,'data'=> $flavours];
 
@@ -27,7 +34,7 @@ class ApiController extends Controller
     public function getAllByCategory(Request $request) :?JsonResponse
     {
         $category_id  = $request->get('category_id');
-        $data = [];
+
         $products = Flavour::where('category_id', $category_id)
                ->orderBy('title', 'desc')
                ->get();
@@ -41,5 +48,38 @@ class ApiController extends Controller
         $response = ['status' => (new Response())->status() ,'data'=> $products];
 
         return new JsonResponse($response);
+    }
+
+    /**
+     * @param Request $request
+     */
+    public function  getFlavourById(Request $request): JsonResponse
+    {
+        /** @var TYPE_NAME $flavour_id */
+        $flavour_id  = $request->get('id');
+
+        /** @var TYPE_NAME $response */
+        $response = [];
+
+        if(empty($flavour_id)){
+            $response = [
+                'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[3],
+                'data' => $this->status_codes->postRequests()->{"406"}{'incorrect_Data'}
+            ];
+            return new JsonResponse($response);
+        }
+        $product = Flavour::where('id', $flavour_id)
+            ->orderBy('title', 'desc')
+            ->first();
+
+        if ($product['image']) {
+            $product['image'] = ImageService::absolutePath($product, $request);
+        }
+
+        $response = ['status' => (new Response())->status() ,'data'=> $product];
+
+        return new JsonResponse($response);
+
+
     }
 }
