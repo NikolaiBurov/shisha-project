@@ -114,4 +114,66 @@ class ApiController extends Controller
         return new JsonResponse($response);
 
     }
+
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getFlavourByIds(Request $request):JsonResponse
+    {
+        /** @var  $flavour_ids */
+        $flavour_ids  = $request->get('flavour_ids');
+
+        /** @var  $response */
+        $response = [];
+
+        /** @var  $found_ids */
+        $found_ids = [];
+        if(empty($flavour_ids)){
+            $response = [
+                'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[3],
+                'data' => $this->status_codes->postRequests()->{"406"}{'incorrect_Data'}
+            ];
+            return new JsonResponse($response);
+        }
+        if (!is_array($flavour_ids)){
+            $response = [
+                'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
+                'data' => $this->status_codes->postRequests()->{"200"}{'wrong_data_type'}
+            ];
+            return new JsonResponse($response);
+        }
+        $flavours =  Flavour::whereIn('id', $flavour_ids)
+                     ->orderBy('title', 'desc')
+                     ->get();
+
+
+        if(empty($flavours)){
+            $response = [
+                'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
+                'data' => $this->status_codes->postRequests()->{"200"}{'product_list_empty'}
+            ];
+            return new JsonResponse($response);
+        }
+
+
+        foreach ($flavours as $key => $flavour) {
+            $found_ids[] = $flavour->id;
+            if ($flavour->image){
+                $flavour->image  = ImageService::absolutePath($flavour,$request);
+            }
+        }
+        $not_found_ids = array_diff($flavour_ids,$found_ids)
+                         ? implode(",",array_diff($flavour_ids,$found_ids))
+                         : [];
+
+
+        $response = ['status' => (new Response())->status() ,
+                     'data'=> $flavours ,
+                     'not_found_flavour_ids' => $not_found_ids
+                    ];
+
+        return new JsonResponse($response);
+    }
 }

@@ -9,7 +9,9 @@ class StatusCodes
                 '200' => [
                     'OK' => 'OK',
                     'non_existent_product' => 'There is no product with such id',
-                    'empty_categories' => 'Categories list is empty'
+                    'product_list_empty' => 'There are no products with such ids',
+                    'empty_categories' => 'Categories list is empty',
+                    'wrong_data_type' => 'Provided value is not of type array'
                 ],
                 '404' => 'NotFound',
                 '400' => 'Bad request',

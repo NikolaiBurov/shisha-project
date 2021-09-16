@@ -15,7 +15,8 @@ use Illuminate\Support\Facades\Route;
 */
 Route::get('/get-all-flavours', [App\Http\Controllers\ApiController::class, 'getAllFlavours']);
 Route::post('/get-by-category', [App\Http\Controllers\ApiController::class, 'getAllByCategory']);
-Route::post('/get-product-by-id', [App\Http\Controllers\ApiController::class, 'getFlavourById']);
+Route::post('/get-flavour-by-id', [App\Http\Controllers\ApiController::class, 'getFlavourById']);
+Route::post('/get-flavour-by-ids', [App\Http\Controllers\ApiController::class, 'getFlavourByIds']);
 Route::get('/get-all-categories', [App\Http\Controllers\ApiController::class, 'getAllCategories']);
 //Route::middleware('auth:api')->get('/user', function (Request $request) {
 //    return $request->user();
