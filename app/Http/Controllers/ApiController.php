@@ -33,6 +33,12 @@ class ApiController extends Controller
             ];
             return new JsonResponse($response);
         }
+
+         foreach ($flavours as $key => $flavour) {
+            if ($flavour->image) {
+                $flavour->image = ImageService::absolutePath($flavour, $request);
+            }
+        }
         $response = ['status' => (new Response())->status(),
             'flavours' => $flavours];
 
