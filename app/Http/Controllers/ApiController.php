@@ -116,7 +116,7 @@ class ApiController extends Controller
             $product['image'] = ImageService::absolutePath($product, $request);
         }
 
-        $response = ['status' => (new Response())->status(), 'flavours' => $product];
+        $response = ['status' => (new Response())->status(), 'flavour' => $product];
 
         return new JsonResponse($response);
 
