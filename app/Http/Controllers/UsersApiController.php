@@ -14,10 +14,10 @@ class UsersApiController
 {
     private $user;
     private $status_codes = [];
-    public function __construct(PublicUser $user)
+    public function __construct(PublicUser $user, StatusCodes  $status_codes)
     {
         $this->user = $user;
-        $this->status_codes = new StatusCodes();
+        $this->status_codes = $status_codes;
     }
 
     public function getAllUsers(Request $request)
