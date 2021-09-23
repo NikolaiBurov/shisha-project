@@ -16,6 +16,7 @@
         "laravel/tinker": "^2.5",
         "laravel/ui": "^3.2",
         "pusher/pusher-php-server": "^5.0",
+        "spatie/laravel-backup": "^6.16",
         "tcg/voyager": "^1.5"
     },
     "require-dev": {
