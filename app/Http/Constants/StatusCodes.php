@@ -4,7 +4,7 @@ namespace App\Http\Constants;
 
 class StatusCodes
 {
-    public function postRequests()
+    public function postRequests($data = null)
     {
         return (object)[
             '200' => [
@@ -13,7 +13,9 @@ class StatusCodes
                 'product_list_empty' => 'There are no products with such ids',
                 'empty_categories' => 'Categories list is empty',
                 'empty_flavours' => 'Flavours list is empty',
-                'wrong_data_type' => 'Provided value is not of type array'
+                'empty_users' => 'Users list is empty',
+                'wrong_data_type' => 'Provided value is not of type array',
+                'user_created' =>  isset($data) ? "User with id {$data['id']} created": ""
             ],
             '404' => 'NotFound',
             '400' => 'Bad request',

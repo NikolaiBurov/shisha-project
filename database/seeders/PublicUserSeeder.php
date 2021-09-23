@@ -16,7 +16,9 @@ class PublicUserSeeder extends Seeder
     {
         if (PublicUser::count() == 0) {
             PublicUser::create([
-                'username' => 'SvetlinNikolov',
+                'username' => 'daxtera',
+                'firstname' => 'Svetlin',
+                'lastname' => 'Nikolov',
                 'email' => 'daxtera@email.com',
                 'password' => '1234',
                 'city' => 'Sofia',
@@ -24,7 +26,9 @@ class PublicUserSeeder extends Seeder
             ]);
 
             PublicUser::create([
-                'username' => 'NikolaiBurov',
+                'username' => 'santa',
+                'firstname' => 'Nikolai',
+                'lastname' => 'Burov',
                 'email' => 'santa@email.com',
                 'password' => '1234',
                 'city' => 'Sofia',
