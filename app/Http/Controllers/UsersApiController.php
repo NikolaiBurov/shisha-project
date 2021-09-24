@@ -9,16 +9,34 @@ use Illuminate\Http\JsonResponse;
 use App\Http\Services\ImageService;
 use App\Http\Constants\StatusCodes;
 use App\Models\PublicUser;
+use Validator;
 
 class UsersApiController
 {
     private $users;
     private $status_codes = [];
+    private $fields = [];
 
     public function __construct(PublicUser $users, StatusCodes $status_codes)
     {
         $this->$users = $users;
         $this->status_codes = $status_codes;
+    }
+
+    /**
+     * @return array
+     */
+    public function getFields(): array
+    {
+        return $this->fields;
+    }
+
+    /**
+     * @param array $fields
+     */
+    public function setFields(array $fields): void
+    {
+        $this->fields = $fields;
     }
 
     /**
@@ -83,7 +101,10 @@ class UsersApiController
     public function registerUser(Request $request): JsonResponse
     {
         //todo make validations
+        $this->setFields(['username', 'first_name', 'last_name', 'password', 'email', 'city', 'address', 'created_at']);
+
         $user_data = $request->get('user_data');
+
         if (empty($user_data)) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[3],
@@ -92,12 +113,33 @@ class UsersApiController
             return new JsonResponse($response);
         }
 
+
+        $fields = $this->getFields();
+        $new_fields = [];
+
+        array_walk($fields, function ($a) use (&$new_fields) {
+            $new_fields[$a] = 'present';
+        });
+
+        $validate_fields = array_merge($new_fields, ['email' => 'unique:public_users|required']);
+
+
+        $validator = Validator::make($user_data, $validate_fields);
+
+        if ($validator->errors()->any()) {
+            $response = [
+                'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
+                'data' => $validator->errors()
+            ];
+
+            return new JsonResponse($response);
+        }
         try {
             $user = PublicUser::create($user_data);
 
             $response = [
-                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
-                 'data' => $this->status_codes->postRequests(['id' => $user->id])->{"200"}{'user_created'}
+                'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
+                'data' => $this->status_codes->postRequests(['id' => $user->id])->{"200"}{'user_created'}
             ];
 
         } catch (\Exception $e) {
@@ -111,4 +153,5 @@ class UsersApiController
 
         return new JsonResponse($response);
     }
+
 }
