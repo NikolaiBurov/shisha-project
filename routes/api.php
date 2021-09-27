@@ -25,7 +25,7 @@ Route::get('/get-all-categories', [App\Http\Controllers\ProductsApiController::c
 Route::get('/users/get-all-users', [App\Http\Controllers\UsersApiController::class, 'getAllUsers']);
 Route::post('/users/get-user-by-id', [App\Http\Controllers\UsersApiController::class, 'getUserById']);
 Route::post('/users/register-user', [App\Http\Controllers\UsersApiController::class, 'registerUser']);
-
+Route::post('/users/login-user', [App\Http\Controllers\UsersApiController::class, 'loginUser']);
 //Route::middleware('auth:api')->get('/user', function (Request $request) {
 //    return $request->user();
 //});

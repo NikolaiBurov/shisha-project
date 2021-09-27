@@ -15,7 +15,9 @@ class StatusCodes
                 'empty_flavours' => 'Flavours list is empty',
                 'empty_users' => 'Users list is empty',
                 'wrong_data_type' => 'Provided value is not of type array',
-                'user_created' =>  isset($data) ? "User with id {$data['id']} created": ""
+                'user_created' =>  isset($data) ? "User with id {$data['id']} created": "",
+                'non_existent_user' => 'User with such username doesnt exist',
+                'incorrect_password' => 'Password doesnt match'
             ],
             '404' => 'NotFound',
             '400' => 'Bad request',
