@@ -13,7 +13,19 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+//Products Endpoints
+Route::get('/get-all-flavours', [App\Http\Controllers\ProductsApiController::class, 'getAllFlavours']);
+Route::post('/get-by-category', [App\Http\Controllers\ProductsApiController::class, 'getAllByCategory']);
+Route::post('/get-flavour-by-id', [App\Http\Controllers\ProductsApiController::class, 'getFlavourById']);
+Route::post('/get-flavour-by-ids', [App\Http\Controllers\ProductsApiController::class, 'getFlavourByIds']);
+Route::get('/get-all-categories', [App\Http\Controllers\ProductsApiController::class, 'getAllCategories']);
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+
+//Users Endpoints
+Route::get('/users/get-all-users', [App\Http\Controllers\UsersApiController::class, 'getAllUsers']);
+Route::post('/users/get-user-by-id', [App\Http\Controllers\UsersApiController::class, 'getUserById']);
+Route::post('/users/register-user', [App\Http\Controllers\UsersApiController::class, 'registerUser']);
+Route::post('/users/login-user', [App\Http\Controllers\UsersApiController::class, 'loginUser']);
+//Route::middleware('auth:api')->get('/user', function (Request $request) {
+//    return $request->user();
+//});

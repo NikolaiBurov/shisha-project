@@ -24,14 +24,14 @@ class HomeController extends Controller
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function index(Request $request)
-    {     
-        $url = action([ApiController::class, 'index']);
-        
+    {
+        $url = action([ProductsApiController::class, 'index']);
+
         return view('home',['url' => $url]);
     }
 
     public function forbidden(Request $request){
-        
+
         return view('forbidden');
     }
 }

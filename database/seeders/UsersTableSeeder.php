@@ -26,6 +26,14 @@ class UsersTableSeeder extends Seeder
                 'remember_token' => Str::random(60),
                 'role_id'        => $role->id,
             ]);
+
+            User::create([
+                'name'           => 'Admin',
+                'email'          => 'loyal@email.com',
+                'password'       => '1234',
+                'remember_token' => Str::random(60),
+                'role_id'        => $role->id,
+            ]);
         }
     }
 }
