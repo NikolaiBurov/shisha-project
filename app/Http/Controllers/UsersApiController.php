@@ -49,13 +49,15 @@ class UsersApiController
         if (!$this->users::all()->isEmpty()) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
-                'users' => $this->users::all()
+                'data' => $this->users::all(),
+                'error_message' => null
             ];
             return new JsonResponse($response);
         }
         $response = [
             'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[1],
-            'data' => $this->status_codes->postRequests()->{"200"}{'empty_users'}
+            'error_message' => $this->status_codes->postRequests()->{"200"}{'empty_users'},
+            'data' => null
         ];
         return new JsonResponse($response);
     }
@@ -71,25 +73,27 @@ class UsersApiController
         if (empty($user_id)) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[3],
-                'data' => $this->status_codes->postRequests()->{"406"}{'incorrect_Data'}
+                'error_message' => $this->status_codes->postRequests()->{"406"}{'incorrect_Data'},
+                'data' => null
             ];
             return new JsonResponse($response);
         }
         $user = $this->users::where('id', $user_id)
-            ->orderBy('firstname', 'desc')
             ->first();
 
         if (is_null($user)) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[1],
-                'data' => $this->status_codes->postRequests()->{"200"}{'empty_users'}
+                'error_message' => $this->status_codes->postRequests()->{"200"}{'empty_users'},
+                'data' => null
             ];
             return new JsonResponse($response);
         }
 
         $response = [
             'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[1],
-            'user' => $user
+            'data' => $user,
+            'error_message' => null
         ];
 
         return new JsonResponse($response);
@@ -107,29 +111,34 @@ class UsersApiController
         if (empty($username) || empty($password)) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[3],
-                'data' => $this->status_codes->postRequests()->{"406"}{'incorrect_Data'}
+                'error_message' => $this->status_codes->postRequests()->{"406"}{'incorrect_Data'},
+                'data' => null
             ];
             return new JsonResponse($response);
         }
         $loaded_user = $this->users::where('username', $username)
             ->first();
+
         if (empty($loaded_user)) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
-                'data' => $this->status_codes->postRequests()->{"200"}{'non_existent_user'}
+                'error_message' => $this->status_codes->postRequests()->{"200"}{'non_existent_user'},
+                'data' => null
             ];
             return new JsonResponse($response);
         }
         if ($loaded_user->password === $password) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
-                'user' => $loaded_user
+                'data' => $loaded_user,
+                'error_message' => null
             ];
             return new JsonResponse($response);
         } else {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[1],
-                'data' => $this->status_codes->postRequests()->{"200"}{'incorrect_password'}
+                'error_message' => $this->status_codes->postRequests()->{"200"}{'incorrect_password'},
+                'data' => null
             ];
             return new JsonResponse($response);
         }
@@ -149,7 +158,8 @@ class UsersApiController
         if (empty($user_data)) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[3],
-                'data' => $this->status_codes->postRequests()->{"406"}{'incorrect_Data'}
+                'error_message' => $this->status_codes->postRequests()->{"406"}{'incorrect_Data'},
+                'data' => null
             ];
             return new JsonResponse($response);
         }
@@ -170,7 +180,8 @@ class UsersApiController
         if ($validator->errors()->any()) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
-                'data' => $validator->errors()
+                'error_message' => $validator->errors(),
+                'data' => null
             ];
 
             return new JsonResponse($response);
@@ -180,13 +191,15 @@ class UsersApiController
 
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
-                'data' => $this->status_codes->postRequests(['id' => $user->id])->{"200"}{'user_created'}
+                'data' => $this->status_codes->postRequests(['id' => $user->id])->{"200"}{'user_created'},
+                'error_message' => null
             ];
 
         } catch (\Exception $e) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[2],
-                'data' => $e->getMessage()
+                'error_message' => $e->getMessage(),
+                'data' => null
             ];
             return new JsonResponse($response);
         }
@@ -202,16 +215,18 @@ class UsersApiController
         if (empty($user_data)) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[3],
-                'data' => $this->status_codes->postRequests()->{"406"}{'incorrect_Data'}
+                'error_message' => $this->status_codes->postRequests()->{"406"}{'incorrect_Data'},
+                'data' => null
             ];
             return new JsonResponse($response);
         }
         $loaded_user = $this->users::find($id);
 
-        if (!isset($loaded_user)){
+        if (!isset($loaded_user)) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
-                'data' =>  $this->status_codes->postRequests(['id' => $id])->{"200"}{'non_existent_user_id'}
+                'error_message' => $this->status_codes->postRequests(['id' => $id])->{"200"}{'non_existent_user_id'},
+                'data' => null
             ];
             return new JsonResponse($response);
         }
@@ -221,23 +236,26 @@ class UsersApiController
         if ($validator->errors()->any()) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
-                'data' => $validator->errors()
+                'error_message' => $validator->errors(),
+                'data' => null
             ];
 
             return new JsonResponse($response);
         }
 
-        if(!$loaded_user->update($user_data)){
+        if (!$loaded_user->update($user_data)) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
-                'data' =>  $this->status_codes->postRequests()->{"200"}{'update_failed'}
+                'error_message' => $this->status_codes->postRequests()->{"200"}{'update_failed'},
+                'data' => null
             ];
             return new JsonResponse($response);
         }
 
         $response = [
             'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
-            'data' =>  $this->status_codes->postRequests()->{"200"}{'success_update'}
+            'data' => $this->status_codes->postRequests()->{"200"}{'success_update'},
+            'error_message' => null
         ];
 
         return new JsonResponse($response);
