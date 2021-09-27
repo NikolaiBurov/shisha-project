@@ -179,7 +179,7 @@ class UsersApiController
 
         if ($validator->errors()->any()) {
             $response = [
-                'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
+                'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[2],
                 'error_message' => $validator->errors(),
                 'data' => null
             ];
@@ -224,7 +224,7 @@ class UsersApiController
 
         if (!isset($loaded_user)) {
             $response = [
-                'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
+                'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[2],
                 'error_message' => $this->status_codes->postRequests(['id' => $id])->{"200"}{'non_existent_user_id'},
                 'data' => null
             ];
@@ -235,7 +235,7 @@ class UsersApiController
 
         if ($validator->errors()->any()) {
             $response = [
-                'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
+                'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[2],
                 'error_message' => $validator->errors(),
                 'data' => null
             ];
@@ -245,7 +245,7 @@ class UsersApiController
 
         if (!$loaded_user->update($user_data)) {
             $response = [
-                'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
+                'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[2],
                 'error_message' => $this->status_codes->postRequests()->{"200"}{'update_failed'},
                 'data' => null
             ];
