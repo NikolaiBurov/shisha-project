@@ -195,4 +195,52 @@ class UsersApiController
         return new JsonResponse($response);
     }
 
+    public function updateUser(Request $request, $id): JsonResponse
+    {
+        $user_data = $request->get('user_data');
+
+        if (empty($user_data)) {
+            $response = [
+                'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[3],
+                'data' => $this->status_codes->postRequests()->{"406"}{'incorrect_Data'}
+            ];
+            return new JsonResponse($response);
+        }
+        $loaded_user = $this->users::find($id);
+
+        if (!isset($loaded_user)){
+            $response = [
+                'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
+                'data' =>  $this->status_codes->postRequests(['id' => $id])->{"200"}{'non_existent_user_id'}
+            ];
+            return new JsonResponse($response);
+        }
+
+        $validator = Validator::make($user_data, ['email' => "unique:public_users,email,{$id}"]);
+
+        if ($validator->errors()->any()) {
+            $response = [
+                'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
+                'data' => $validator->errors()
+            ];
+
+            return new JsonResponse($response);
+        }
+
+        if(!$loaded_user->update($user_data)){
+            $response = [
+                'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
+                'data' =>  $this->status_codes->postRequests()->{"200"}{'update_failed'}
+            ];
+            return new JsonResponse($response);
+        }
+
+        $response = [
+            'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
+            'data' =>  $this->status_codes->postRequests()->{"200"}{'success_update'}
+        ];
+
+        return new JsonResponse($response);
+    }
+
 }
