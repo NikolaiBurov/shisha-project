@@ -26,7 +26,8 @@ class StatusCodes
             '400' => 'Bad request',
             '406' => [
                 'incorrect_Data' => 'Data not provided'
-            ]
+            ],
+            '204' => 'No content'
         ];
     }
 }
