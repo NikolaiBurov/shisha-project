@@ -87,14 +87,14 @@ class UsersApiController
         if (is_null($user)) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[1],
-                'error_message' => $this->status_codes->postRequests()->{"200"}{'empty_users'},
+                'error_message' => $this->status_codes->postRequests(['id' => $user_id])->{"200"}{'non_existent_user_id'},
                 'data' => null
             ];
             return new JsonResponse($response);
         }
 
         $response = [
-            'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[1],
+            'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
             'data' => $user,
             'error_message' => null
         ];
