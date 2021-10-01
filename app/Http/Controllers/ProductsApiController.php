@@ -40,7 +40,7 @@ class ProductsApiController extends Controller
                 $flavour->image = ImageService::absolutePath($flavour, $request);
             }
         }
-        $response = ['status' => (new Response())->status(),
+        $response = ['status_code' => (new Response())->status(),
             'data' => $flavours,
             'error_message' => null
         ];
