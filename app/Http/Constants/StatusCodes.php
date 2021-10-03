@@ -9,7 +9,7 @@ class StatusCodes
         return (object)[
             '200' => [
                 'OK' => 'OK',
-                'non_existent_product' => 'There is no product with such id',
+                'non_existent_product' => 'There is no product with such id or  its not translatable',
                 'product_list_empty' => 'There are no products with such ids',
                 'empty_categories' => 'Categories list is empty',
                 'empty_flavours' => 'Flavours list is empty',

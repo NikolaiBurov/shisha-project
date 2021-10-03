@@ -22,13 +22,10 @@ class TranslationsHelper
 
         foreach ($products as $item => $data) {
             if ($language == 'en') {
-                if ($data->translations->isEmpty()) {
-                    $entities[$data->id] = null;
-                } else {
-                    $entities[$data->id] = $data->translate('en', 'bg');
+                if (!$data->translations->isEmpty()) {
+                   $entities[$data->id] = $data->translate('en', 'bg');
 
                     $entities[$data->id]['image'] = ImageService::absolutePath($entities[$data->id]['image'], $request);
-
                 }
 
             } elseif ($language == 'bg') {
