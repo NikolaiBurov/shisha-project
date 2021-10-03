@@ -9,6 +9,7 @@ use Illuminate\Http\JsonResponse;
 use App\Http\Services\ImageService;
 use App\Http\Constants\StatusCodes;
 use TCG\Voyager\Models\Category;
+use App\Http\Services\TranslationsHelper;
 
 class ProductsApiController extends Controller
 {
@@ -18,14 +19,25 @@ class ProductsApiController extends Controller
      */
     private $status_codes;
 
-    public function __construct()
+
+    /**
+     * @var TranslationsHelper
+     */
+    private $translation_helper;
+
+    public function __construct(TranslationsHelper $translationsHelper)
     {
+        $this->translation_helper = $translationsHelper;
         $this->status_codes = (new StatusCodes());
     }
 
     public function getAllFlavours(Request $request): ?JsonResponse
     {
-        $flavours = Flavour::all();
+        $lang = $request->get('language');
+
+        $flavours = $this->translation_helper->languangeMapper($lang, Flavour::all()->load('translations'), $request);
+
+
         if (empty($flavours)) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[1],
@@ -35,11 +47,6 @@ class ProductsApiController extends Controller
             return new JsonResponse($response);
         }
 
-        foreach ($flavours as $key => $flavour) {
-            if ($flavour->image) {
-                $flavour->image = ImageService::absolutePath($flavour, $request);
-            }
-        }
         $response = ['status_code' => (new Response())->status(),
             'data' => $flavours,
             'error_message' => null
@@ -55,7 +62,11 @@ class ProductsApiController extends Controller
      */
     public function getAllByCategory(Request $request): ?JsonResponse
     {
+        /** @var  $category_id */
         $category_id = $request->get('category_id');
+
+        /** @var  $lang */
+        $lang = $request->get('language');
 
         if (empty($category_id)) {
             $response = [
@@ -65,11 +76,16 @@ class ProductsApiController extends Controller
             ];
             return new JsonResponse($response);
         }
-        $products = Flavour::where('category_id', $category_id)
-            ->orderBy('title', 'desc')
-            ->get();
+        $products = $this->translation_helper->languangeMapper(
+            $lang,
+            Flavour::where('category_id', $category_id)
+                ->orderBy('id', 'asc')
+                ->withTranslations($lang)
+                ->get(),
+            $request
+        );
 
-        if ($products->isEmpty()) {
+        if (count($products) == 0) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[1],
                 'error_message' => $this->status_codes->postRequests()->{"200"}{'empty_flavours'},
@@ -77,12 +93,7 @@ class ProductsApiController extends Controller
             ];
             return new JsonResponse($response);
         }
-        foreach ($products as $key => $flavours) {
 
-            if ($flavours->image) {
-                $flavours->image = ImageService::absolutePath($flavours, $request);
-            }
-        }
         $response = ['status' => (new Response())->status(), 'data' => $products, 'error_message' => null];
 
         return new JsonResponse($response);
@@ -93,10 +104,14 @@ class ProductsApiController extends Controller
      */
     public function getFlavourById(Request $request): JsonResponse
     {
-        /** @var TYPE_NAME $flavour_id */
+        /** @var  $flavour_id */
         $flavour_id = $request->get('id');
 
-        /** @var TYPE_NAME $response */
+
+        /** @var  $lang */
+        $lang = $request->get('language');
+
+        /** @var  $response */
         $response = [];
 
         if (empty($flavour_id)) {
@@ -107,20 +122,20 @@ class ProductsApiController extends Controller
             ];
             return new JsonResponse($response);
         }
-        $product = Flavour::where('id', $flavour_id)
-            ->orderBy('title', 'desc')
-            ->first();
+        $product = $this->translation_helper->languangeMapper($lang,
+            Flavour::where('id', $flavour_id)
+                ->withTranslations($lang)
+                ->get(),
+            $request);
 
-        if (empty($product)) {
+
+        if (count($product) == 0) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
                 'error_message' => $this->status_codes->postRequests()->{"200"}{'non_existent_product'},
                 'data' => null
             ];
             return new JsonResponse($response);
-        }
-        if ($product['image']) {
-            $product['image'] = ImageService::absolutePath($product, $request);
         }
 
         $response = ['status' => (new Response())->status(), 'data' => $product, 'error_message' => null];
@@ -164,6 +179,9 @@ class ProductsApiController extends Controller
         /** @var  $flavour_ids */
         $flavour_ids = $request->get('flavour_ids');
 
+        /** @var  $lang */
+        $lang = $request->get('language');
+
         /** @var  $response */
         $response = [];
 
@@ -185,12 +203,14 @@ class ProductsApiController extends Controller
             ];
             return new JsonResponse($response);
         }
-        $flavours = Flavour::whereIn('id', $flavour_ids)
-            ->orderBy('title', 'desc')
-            ->get();
+        $flavours = $this->translation_helper->languangeMapper($lang,
+            Flavour::whereIn('id', $flavour_ids)
+                ->orderBy('id', 'asc')
+                ->withTranslations($lang)
+                ->get(),
+            $request);
 
-
-        if (empty($flavours)) {
+        if (count($flavours) == 0) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
                 'error_message' => $this->status_codes->postRequests()->{"200"}{'product_list_empty'},
@@ -200,12 +220,8 @@ class ProductsApiController extends Controller
         }
 
 
-        foreach ($flavours as $key => $flavour) {
-            $found_ids[] = $flavour->id;
-            if ($flavour->image) {
-                $flavour->image = ImageService::absolutePath($flavour, $request);
-            }
-        }
+        $found_ids = array_keys($flavours);
+
         $not_found_ids = array_diff($flavour_ids, $found_ids)
             ? implode(",", array_diff($flavour_ids, $found_ids))
             : [];
