@@ -122,6 +122,9 @@ class ProductsApiController extends Controller
         /** @var  $lang */
         $lang = $request->get('language');
 
+          /** @var  $data_for_csharp */
+        $data_for_csharp  = [];
+
         /** @var  $response */
         $response = [];
 
@@ -149,7 +152,11 @@ class ProductsApiController extends Controller
             return new JsonResponse($response);
         }
 
-        $response = ['status' => (new Response())->status(), 'data' => $product, 'error_message' => null];
+        foreach ($product as $item => $value) {
+            $data_for_csharp[] = $value;
+        }
+
+        $response = ['status' => (new Response())->status(), 'data' => $data_for_csharp, 'error_message' => null];
 
         return new JsonResponse($response);
 
