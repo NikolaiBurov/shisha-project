@@ -34,7 +34,6 @@ class ProductsApiController extends Controller
     public function getAllFlavours(Request $request): ?JsonResponse
     {
         $lang = $request->get('language');
-        $data_for_csharp  = [];
 
         $flavours = $this->translation_helper->languangeMapper($lang, Flavour::all()->load('translations'), $request);
 
@@ -47,12 +46,9 @@ class ProductsApiController extends Controller
             ];
             return new JsonResponse($response);
         }
-        foreach ($flavours as $key => $value) {
-           $data_for_csharp[] = $value;
-       }
 
         $response = ['status_code' => (new Response())->status(),
-            'data' => $data_for_csharp,
+            'data' => $flavours,
             'error_message' => null
         ];
 
@@ -68,9 +64,6 @@ class ProductsApiController extends Controller
     {
         /** @var  $category_id */
         $category_id = $request->get('category_id');
-
-        /** @var  $data_for_csharp */
-        $data_for_csharp  = [];
 
         /** @var  $lang */
         $lang = $request->get('language');
@@ -92,7 +85,7 @@ class ProductsApiController extends Controller
             $request
         );
 
-        if (count($products) == 0) {
+        if (is_null($products)) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[1],
                 'error_message' => $this->status_codes->postRequests()->{"200"}{'empty_flavours'},
@@ -101,11 +94,8 @@ class ProductsApiController extends Controller
             return new JsonResponse($response);
         }
 
-        foreach ($products as $item => $value) {
-            $data_for_csharp[] = $value;
-        }
 
-        $response = ['status' => (new Response())->status(), 'data' => $data_for_csharp, 'error_message' => null];
+        $response = ['status' => (new Response())->status(), 'data' => $products, 'error_message' => null];
 
         return new JsonResponse($response);
     }
@@ -121,9 +111,6 @@ class ProductsApiController extends Controller
 
         /** @var  $lang */
         $lang = $request->get('language');
-
-          /** @var  $data_for_csharp */
-        $data_for_csharp  = [];
 
         /** @var  $response */
         $response = [];
@@ -143,7 +130,7 @@ class ProductsApiController extends Controller
             $request);
 
 
-        if (count($product) == 0) {
+        if (is_null($product)) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[1],
                 'error_message' => $this->status_codes->postRequests()->{"200"}{'non_existent_product'},
@@ -152,11 +139,8 @@ class ProductsApiController extends Controller
             return new JsonResponse($response);
         }
 
-        foreach ($product as $item => $value) {
-            $data_for_csharp[] = $value;
-        }
 
-        $response = ['status' => (new Response())->status(), 'data' => $data_for_csharp, 'error_message' => null];
+        $response = ['status' => (new Response())->status(), 'data' => $product, 'error_message' => null];
 
         return new JsonResponse($response);
 
@@ -200,14 +184,12 @@ class ProductsApiController extends Controller
         /** @var  $lang */
         $lang = $request->get('language');
 
-          /** @var  $data_for_csharp */
-        $data_for_csharp  = [];
-
         /** @var  $response */
         $response = [];
 
         /** @var  $found_ids */
         $found_ids = [];
+
         if (empty($flavour_ids)) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[3],
@@ -231,7 +213,7 @@ class ProductsApiController extends Controller
                 ->get(),
             $request);
 
-        if (count($flavours) == 0) {
+        if (is_null($flavours)) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
                 'error_message' => $this->status_codes->postRequests()->{"200"}{'product_list_empty'},
@@ -240,18 +222,18 @@ class ProductsApiController extends Controller
             return new JsonResponse($response);
         }
 
-        foreach ($flavours as $index => $value) {
-            $data_for_csharp[] = $value;
+        foreach ($flavours as $id => $item) {
+            $found_ids[] = $item['id'];
         }
-        $found_ids = array_keys($flavours);
 
         $not_found_ids = array_diff($flavour_ids, $found_ids)
             ? implode(",", array_diff($flavour_ids, $found_ids))
             : [];
 
 
-        $response = ['status' => (new Response())->status(),
-            'data' => $data_for_csharp,
+        $response = [
+            'status' => (new Response())->status(),
+            'data' => $flavours,
             'error_message' => null,
             'not_found_flavour_ids' => $not_found_ids
         ];

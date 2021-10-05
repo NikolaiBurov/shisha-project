@@ -19,6 +19,7 @@ class TranslationsHelper
     public function languangeMapper(string $language, $products, Request $request)
     {
         $entities = [];
+        $response = [];
 
         foreach ($products as $item => $data) {
             if ($language == 'en') {
@@ -36,7 +37,10 @@ class TranslationsHelper
             }
         }
 
-        return $entities;
+        foreach ($entities as $id => $collection) {
+            $response[] = $collection;
+        }
+        return $response;
 
 
     }
