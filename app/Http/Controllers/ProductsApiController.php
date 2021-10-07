@@ -265,14 +265,6 @@ class ProductsApiController extends Controller
 
         $result = $this->translation_helper->languangeMapper($request->get('language'), $response->get(), $request);
 
-        if (empty($result)) {
-            $response = [
-                'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[3],
-                'error_message' => $this->status_codes->postRequests()->{"200"}{'filters_none'},
-                'data' => null
-            ];
-            return new JsonResponse($response);
-        }
         $end_result = [
             'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
             'data' => $result,
