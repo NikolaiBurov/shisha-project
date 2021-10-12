@@ -259,7 +259,7 @@ class ProductsApiController extends Controller
         }
 
         if ($request->filled('category_id')) {
-            $response = $response->where('category_id', '=', $request->get('category_id'));
+            $response = $response->whereIn('category_id', $request->get('category_id'));
         }
 
 
