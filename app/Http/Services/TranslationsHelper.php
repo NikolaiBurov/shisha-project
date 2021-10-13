@@ -24,7 +24,7 @@ class TranslationsHelper
         foreach ($products as $item => $data) {
             if ($language == 'en') {
                 if (!$data->translations->isEmpty()) {
-                   $entities[$data->id] = $data->translate('en', 'bg');
+                    $entities[$data->id] = $data->translate('en', 'bg');
 
                     $entities[$data->id]['image'] = ImageService::absolutePath($entities[$data->id]['image'], $request);
                 }
@@ -42,6 +42,48 @@ class TranslationsHelper
         }
         return $response;
 
+
+    }
+
+    public function filterHelper($data, $language, Request $request)
+    {
+
+        $translated = [];
+        $result = [];
+        foreach ($data->getCollection() as $item => $context) {
+            if ($language == 'en') {
+                if (!$context->translations->isEmpty()) {
+                    $translated[$context->id] = $context->translate('en', 'bg');
+
+                    $translated[$context->id]['image'] = ImageService::absolutePath($translated[$context->id]['image'], $request);
+                }
+
+            } elseif ($language == 'bg') {
+                $translated[$context->id] = $context->translate('bg', 'en');
+
+                $translated[$context->id]['image'] = ImageService::absolutePath($translated[$context->id]['image'], $request);
+
+            }
+        }
+
+        foreach ($translated as $key => $value) {
+            $result[] = $value;
+        }
+
+        $itemsTransformedAndPaginated = new \Illuminate\Pagination\LengthAwarePaginator(
+            $result,
+            $data->total(),
+            $data->perPage(),
+            $data->currentPage(), [
+                'path' => \Request::url(),
+                'query' => [
+                    'page' => $data->currentPage()
+                ]
+            ]
+        );
+
+
+        return $itemsTransformedAndPaginated;
 
     }
 }

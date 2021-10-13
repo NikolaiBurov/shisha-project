@@ -140,7 +140,7 @@ class ProductsApiController extends Controller
         }
 
 
-        $response = ['status' => (new Response())->status(), 'data' => $product, 'error_message' => null];
+        $response = ['status_code' => (new Response())->status(), 'data' => $product, 'error_message' => null];
 
         return new JsonResponse($response);
 
@@ -232,7 +232,7 @@ class ProductsApiController extends Controller
 
 
         $response = [
-            'status' => (new Response())->status(),
+            'status_code' => (new Response())->status(),
             'data' => $flavours,
             'error_message' => null,
             'not_found_flavour_ids' => $not_found_ids
@@ -245,6 +245,7 @@ class ProductsApiController extends Controller
     {
 
         $response = Flavour::query();
+        $products_number =  $request->filled('products_number') ? $request->get('products_number') : 2;
 
         if ($request->filled('price_from')) {
             $response = $response->where('price', '>=', $request->get('price_from'));
@@ -262,15 +263,13 @@ class ProductsApiController extends Controller
             $response = $response->whereIn('category_id', $request->get('category_id'));
         }
 
+        $response = $response->orderBy('id', 'asc');
 
-        $result = $this->translation_helper->languangeMapper($request->get('language'), $response->get(), $request);
+        $paginated = $response->paginate($products_number);
 
-        $end_result = [
-            'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
-            'data' => $result,
-            'error_message' => null
-        ];
-        return new JsonResponse($end_result);
+        $result = $this->translation_helper->filterHelper($paginated,$request->get('language'),$request);
+
+        return new JsonResponse($result);
 
 
     }
