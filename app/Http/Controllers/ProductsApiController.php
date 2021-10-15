@@ -267,7 +267,8 @@ class ProductsApiController extends Controller
 
         $paginated = $response->paginate($products_number);
 
-        $result = $this->translation_helper->filterHelper($paginated,$request->get('language'),$request);
+        $result = $this->translation_helper->filterHelper($paginated,$request->get('language'),$request,$this->status_codes);
+
 
         return new JsonResponse($result);
 

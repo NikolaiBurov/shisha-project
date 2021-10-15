@@ -3,6 +3,7 @@
 
 namespace App\Http\Services;
 
+use App\Http\Constants\StatusCodes;
 use App\Http\Services\ImageService;
 use Illuminate\Http\Request;
 
@@ -27,12 +28,20 @@ class TranslationsHelper
                     $entities[$data->id] = $data->translate('en', 'bg');
 
                     $entities[$data->id]['image'] = ImageService::absolutePath($entities[$data->id]['image'], $request);
+
+                    if (!is_null($data->image_gallery)) {
+                        $entities[$data->id]['image_gallery'] = ImageService::multipleImagesAbsolutePath($entities[$data->id]['image_gallery'], $request);
+                    }
                 }
 
             } elseif ($language == 'bg') {
 
                 $entities[$data->id] = $data->translate('bg', 'en');
                 $entities[$data->id]['image'] = ImageService::absolutePath($entities[$data->id]['image'], $request);
+
+                if (!is_null($data->image_gallery)) {
+                    $entities[$data->id]['image_gallery'] = ImageService::multipleImagesAbsolutePath($entities[$data->id]['image_gallery'], $request);
+                }
 
             }
         }
@@ -45,7 +54,16 @@ class TranslationsHelper
 
     }
 
-    public function filterHelper($data, $language, Request $request)
+
+    /**
+     * @param $data
+     * @param $language
+     * @param Request $request
+     * @param StatusCodes $statusCodes
+     * @return \Illuminate\Pagination\LengthAwarePaginator
+     * @todo Refacor this method in the future
+     */
+    public function filterHelper($data, $language, Request $request, StatusCodes $statusCodes)
     {
 
         $translated = [];
@@ -69,6 +87,8 @@ class TranslationsHelper
         foreach ($translated as $key => $value) {
             $result[] = $value;
         }
+
+        $result['status_code'] = empty($result) ? array_keys(get_object_vars($statusCodes->postRequests()))[4] : array_keys(get_object_vars($statusCodes->postRequests()))[0];
 
         $itemsTransformedAndPaginated = new \Illuminate\Pagination\LengthAwarePaginator(
             $result,

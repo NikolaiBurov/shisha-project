@@ -32,4 +32,16 @@ class ImageService
             return $path . '/storage/' . $data;
         }
     }
+
+    public static function multipleImagesAbsolutePath($data, Request $request)
+    {
+        $path = $request->getSchemeAndHttpHost();
+        $result = [];
+
+        foreach (explode(",",str_replace(['"',"[","]",'\\'],"",$data))  as $index => $item) {
+            $result[] = $path .'/storage/'. $item;
+        }
+
+        return $result;
+    }
 }
