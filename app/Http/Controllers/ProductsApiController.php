@@ -245,7 +245,7 @@ class ProductsApiController extends Controller
     {
 
         $response = Flavour::query();
-        $products_number =  $request->filled('products_number') ? $request->get('products_number') : 2;
+        $products_number =  $request->filled('products_number') ? $request->get('products_number') : 6;
 
         if ($request->filled('price_from')) {
             $response = $response->where('price', '>=', $request->get('price_from'));
@@ -269,8 +269,11 @@ class ProductsApiController extends Controller
 
         $result = $this->translation_helper->filterHelper($paginated,$request->get('language'),$request,$this->status_codes);
 
+         $status_code = $result->isEmpty()
+            ? array_keys(get_object_vars($this->status_codes->postRequests()))[4]
+            : array_keys(get_object_vars($this->status_codes->postRequests()))[0];
 
-        return new JsonResponse($result);
+        return new JsonResponse([ 'status_code' => $status_code ,'items' => $result]);
 
 
     }

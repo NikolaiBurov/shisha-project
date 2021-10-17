@@ -65,7 +65,6 @@ class TranslationsHelper
      */
     public function filterHelper($data, $language, Request $request, StatusCodes $statusCodes)
     {
-
         $translated = [];
         $result = [];
         foreach ($data->getCollection() as $item => $context) {
@@ -85,10 +84,9 @@ class TranslationsHelper
         }
 
         foreach ($translated as $key => $value) {
+            unset($value['image_gallery']);
             $result[] = $value;
         }
-
-        $result['status_code'] = empty($result) ? array_keys(get_object_vars($statusCodes->postRequests()))[4] : array_keys(get_object_vars($statusCodes->postRequests()))[0];
 
         $itemsTransformedAndPaginated = new \Illuminate\Pagination\LengthAwarePaginator(
             $result,
@@ -101,7 +99,6 @@ class TranslationsHelper
                 ]
             ]
         );
-
 
         return $itemsTransformedAndPaginated;
 
