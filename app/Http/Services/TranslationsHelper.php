@@ -63,7 +63,7 @@ class TranslationsHelper
      * @return \Illuminate\Pagination\LengthAwarePaginator
      * @todo Refacor this method in the future
      */
-    public function filterHelper($data, $language, Request $request, StatusCodes $statusCodes)
+    public function filterHelper($data, $language, Request $request, StatusCodes $statusCodes,$current_page)
     {
         $translated = [];
         $result = [];
@@ -92,7 +92,7 @@ class TranslationsHelper
             $result,
             $data->total(),
             $data->perPage(),
-            $data->currentPage(), [
+            $current_page, [
                 'path' => \Request::url(),
                 'query' => [
                     'page' => $data->currentPage()
