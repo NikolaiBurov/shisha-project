@@ -245,6 +245,7 @@ class ProductsApiController extends Controller
     {
 
         $response = Flavour::query();
+
         $products_number =  $request->filled('products_number') ? $request->get('products_number') : 6;
 
         $current_page  = $request->filled('page') ? $request->get('page') : 1;
@@ -261,7 +262,7 @@ class ProductsApiController extends Controller
             $response = $response->where('in_stock', '=', $request->get('in_stock'));
         }
 
-        if ($request->filled('category_id')) {
+        if ($request->filled('category_id') && !empty($request->get('category_id'))) {
             $response = $response->whereIn('category_id', $request->get('category_id'));
         }
 
