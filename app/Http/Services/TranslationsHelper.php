@@ -63,10 +63,10 @@ class TranslationsHelper
      * @return \Illuminate\Pagination\LengthAwarePaginator
      * @todo Refacor this method in the future
      */
-    public function filterHelper($data, $language, Request $request, StatusCodes $statusCodes,$current_page)
+    public function filterHelper($data, $language, Request $request, StatusCodes $statusCodes, $current_page)
     {
         $translated = [];
-        $result = [];
+
         foreach ($data->getCollection() as $item => $context) {
             if ($language == 'en') {
                 if (!$context->translations->isEmpty()) {
@@ -83,13 +83,19 @@ class TranslationsHelper
             }
         }
 
-        foreach ($translated as $key => $value) {
-            unset($value['image_gallery']);
-            $result[] = $value;
-        }
+        $result = $this->formatedResults($data, $translated, $current_page,$statusCodes);
+
+        return $result;
+
+    }
+
+    private function formatedResults($data, $items, $current_page,StatusCodes $statusCodes)
+    {
+        $paginatior = new \stdClass();
+        $flavours = [];
 
         $itemsTransformedAndPaginated = new \Illuminate\Pagination\LengthAwarePaginator(
-            $result,
+            $items,
             $data->total(),
             $data->perPage(),
             $current_page, [
@@ -100,7 +106,23 @@ class TranslationsHelper
             ]
         );
 
-        return $itemsTransformedAndPaginated;
+        foreach ($itemsTransformedAndPaginated as $key => $value) {
+            unset($value['image_gallery']);
+            $flavours[] = $value;
+        }
+
+        $status_code = empty($flavours)
+            ? array_keys(get_object_vars($statusCodes->postRequests()))[4]
+            : array_keys(get_object_vars($statusCodes->postRequests()))[0];
+
+        $paginatior->on_first_page = $itemsTransformedAndPaginated->onFirstPage();
+        $paginatior->last_page = $itemsTransformedAndPaginated->lastPage();
+        $paginatior->total_products = $itemsTransformedAndPaginated->total();
+        $paginatior->current_page = $itemsTransformedAndPaginated->currentPage();
+        $paginatior->per_page = $itemsTransformedAndPaginated->perPage();
+
+        return ['paginator' => $paginatior, 'data' => $flavours,'status_code' =>$status_code];
+
 
     }
 }

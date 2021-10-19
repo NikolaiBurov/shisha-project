@@ -246,7 +246,7 @@ class ProductsApiController extends Controller
 
         $response = Flavour::query();
 
-        $products_number =  $request->filled('products_number') ? $request->get('products_number') : 6;
+        $products_number =  $request->filled('items_per_page') ? $request->get('items_per_page') : 6;
 
         $current_page  = $request->filled('page') ? $request->get('page') : 1;
 
@@ -272,11 +272,7 @@ class ProductsApiController extends Controller
 
         $result = $this->translation_helper->filterHelper($paginated,$request->get('language'),$request,$this->status_codes,$current_page);
 
-         $status_code = $result->isEmpty()
-            ? array_keys(get_object_vars($this->status_codes->postRequests()))[4]
-            : array_keys(get_object_vars($this->status_codes->postRequests()))[0];
-
-        return new JsonResponse([ 'status_code' => $status_code ,'items' => $result]);
+        return new JsonResponse( $result);
 
 
     }
