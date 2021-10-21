@@ -63,7 +63,7 @@ class TranslationsHelper
      * @return \Illuminate\Pagination\LengthAwarePaginator
      * @todo Refacor this method in the future
      */
-    public function filterHelper($data, $language, Request $request, StatusCodes $statusCodes, $current_page)
+    public function paginatorHelper($data, $language, Request $request, StatusCodes $statusCodes, $current_page)
     {
         $translated = [];
 

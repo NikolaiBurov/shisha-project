@@ -35,24 +35,16 @@ class ProductsApiController extends Controller
     {
         $lang = $request->get('language');
 
-        $flavours = $this->translation_helper->languangeMapper($lang, Flavour::all()->load('translations'), $request);
+        $products_number =  $request->filled('items_per_page') ? $request->get('items_per_page') : 6;
+
+        $current_page  = $request->filled('page') ? $request->get('page') : 1;
 
 
-        if (empty($flavours)) {
-            $response = [
-                'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[1],
-                'error_message' => $this->status_codes->postRequests()->{"200"}{'empty_flavours'},
-                'data' => null
-            ];
-            return new JsonResponse($response);
-        }
+        $paginated = Flavour::query()->orderBy('id','asc')->paginate($products_number);
 
-        $response = ['status_code' => (new Response())->status(),
-            'data' => $flavours,
-            'error_message' => null
-        ];
+        $result = $this->translation_helper->paginatorHelper($paginated,$request->get('language'),$request,$this->status_codes,$current_page);
 
-        return new JsonResponse($response);
+        return new JsonResponse($result);
     }
 
     /**
@@ -270,7 +262,7 @@ class ProductsApiController extends Controller
 
         $paginated = $response->paginate($products_number);
 
-        $result = $this->translation_helper->filterHelper($paginated,$request->get('language'),$request,$this->status_codes,$current_page);
+        $result = $this->translation_helper->paginatorHelper($paginated,$request->get('language'),$request,$this->status_codes,$current_page);
 
         return new JsonResponse( $result);
 
