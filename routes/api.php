@@ -14,10 +14,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 //Products Endpoints
-Route::get('/get-all-flavours', [App\Http\Controllers\ProductsApiController::class, 'getAllFlavours']);
+Route::post('/get-all-flavours', [App\Http\Controllers\ProductsApiController::class, 'getAllFlavours']);
 Route::post('/get-by-category', [App\Http\Controllers\ProductsApiController::class, 'getAllByCategory']);
 Route::post('/get-flavour-by-id', [App\Http\Controllers\ProductsApiController::class, 'getFlavourById']);
 Route::post('/get-flavour-by-ids', [App\Http\Controllers\ProductsApiController::class, 'getFlavourByIds']);
+Route::post('/filter-flavours', [App\Http\Controllers\ProductsApiController::class, 'filterFlavours']);
 Route::get('/get-all-categories', [App\Http\Controllers\ProductsApiController::class, 'getAllCategories']);
 
 

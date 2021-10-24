@@ -9,7 +9,7 @@ class StatusCodes
         return (object)[
             '200' => [
                 'OK' => 'OK',
-                'non_existent_product' => 'There is no product with such id',
+                'non_existent_product' => 'There is no product with such id or  its not translatable',
                 'product_list_empty' => 'There are no products with such ids',
                 'empty_categories' => 'Categories list is empty',
                 'empty_flavours' => 'Flavours list is empty',
@@ -20,13 +20,15 @@ class StatusCodes
                 'non_existent_user_id' =>   isset($data) ? "User with id {$data['id']} doesnt exist" : "",
                 'incorrect_password' => 'Password doesnt match',
                 'update_failed' => 'Failed to update',
-                'success_update' => 'User updated successfully'
+                'success_update' => 'User updated successfully',
+                'filters_none' => 'Searched filters returned empty list'
             ],
             '404' => 'NotFound',
             '400' => 'Bad request',
             '406' => [
                 'incorrect_Data' => 'Data not provided'
-            ]
+            ],
+            '204' => 'No content'
         ];
     }
 }

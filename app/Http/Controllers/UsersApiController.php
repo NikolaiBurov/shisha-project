@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use  Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
 use App\Http\Services\ImageService;
+use App\Http\Services\ErrorService;
 use App\Http\Constants\StatusCodes;
 use App\Models\PublicUser;
 use Validator;
@@ -16,12 +17,14 @@ class UsersApiController
 {
     private $users;
     private $status_codes = [];
+    private $error_service;
     private $fields = [];
 
-    public function __construct(PublicUser $users, StatusCodes $status_codes)
+    public function __construct(PublicUser $users, StatusCodes $status_codes, ErrorService $errorService)
     {
         $this->users = $users;
         $this->status_codes = $status_codes;
+        $this->error_service = $errorService;
     }
 
     /**
@@ -83,15 +86,15 @@ class UsersApiController
 
         if (is_null($user)) {
             $response = [
-                'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[1],
-                'error_message' => $this->status_codes->postRequests()->{"200"}{'empty_users'},
+                'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[4],
+                'error_message' => $this->status_codes->postRequests(['id' => $user_id])->{"200"}{'non_existent_user_id'},
                 'data' => null
             ];
             return new JsonResponse($response);
         }
 
         $response = [
-            'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[1],
+            'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
             'data' => $user,
             'error_message' => null
         ];
@@ -180,7 +183,7 @@ class UsersApiController
         if ($validator->errors()->any()) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[2],
-                'error_message' => $validator->errors(),
+                'error_message' => $this->error_service->convertErrors($validator->messages()->toArray()),
                 'data' => null
             ];
 
@@ -236,7 +239,7 @@ class UsersApiController
         if ($validator->errors()->any()) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[2],
-                'error_message' => $validator->errors(),
+                'error_message' => $this->error_service->convertErrors($validator->messages()->toArray()),
                 'data' => null
             ];
 
