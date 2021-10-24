@@ -1,7 +1,9 @@
 <?php
 
 namespace App\Http\Services;
+
 use Illuminate\Http\Request;
+
 class ImageService
 {
     /**
@@ -9,8 +11,9 @@ class ImageService
      */
     private $images_path;
 
-    public function  __construct($images_path){
-        $this->images_path  = $images_path;
+    public function __construct($images_path)
+    {
+        $this->images_path = $images_path;
     }
 
     /**
@@ -18,13 +21,27 @@ class ImageService
      * @param Request $request
      * @return string|void
      */
-    public static function absolutePath($data = null ,Request $request){
+    public static function absolutePath($data = null, Request $request)
+    {
         $path = $request->getSchemeAndHttpHost();
-        if(isset($data) && is_object($data)){
-            return $path . '/storage/' .  $data->image;
+        if (isset($data) && is_object($data)) {
+            return $path . '/storage/' . $data->image;
+        } elseif (isset($data) && is_array($data)) {
+            return $path . '/storage/' . $data['image'];
+        } else {
+            return $path . '/storage/' . $data;
         }
-        elseif(isset($data) && is_array($data)){
-            return $path . '/storage/' .  $data['image'];
+    }
+
+    public static function multipleImagesAbsolutePath($data, Request $request)
+    {
+        $path = $request->getSchemeAndHttpHost();
+        $result = [];
+
+        foreach (explode(",",str_replace(['"',"[","]",'\\'],"",$data))  as $index => $item) {
+            $result[] = $path .'/storage/'. $item;
         }
+
+        return $result;
     }
 }
