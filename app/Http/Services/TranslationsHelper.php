@@ -6,6 +6,7 @@ namespace App\Http\Services;
 use App\Http\Constants\StatusCodes;
 use App\Http\Services\ImageService;
 use Illuminate\Http\Request;
+use App\Models\FlavourVariation;
 
 
 class TranslationsHelper
@@ -21,13 +22,20 @@ class TranslationsHelper
     {
         $entities = [];
         $response = [];
+        $flavours_variations = FlavourVariation::all()->toArray();
 
         foreach ($products as $item => $data) {
+
             if ($language == 'en') {
                 if (!$data->translations->isEmpty()) {
                     $entities[$data->id] = $data->translate('en', 'bg');
 
+                    $entities[$data->id]['flavour_variations'] = array_map(function ($variations) use ($data) {
+                        $variations['flavour_id'] === $data->id ?: [$variations];
+                    }, $flavours_variations);
+
                     $entities[$data->id]['image'] = ImageService::absolutePath($entities[$data->id]['image'], $request);
+
 
                     if (!is_null($data->image_gallery)) {
                         $entities[$data->id]['image_gallery'] = ImageService::multipleImagesAbsolutePath($entities[$data->id]['image_gallery'], $request);
@@ -37,6 +45,14 @@ class TranslationsHelper
             } elseif ($language == 'bg') {
 
                 $entities[$data->id] = $data->translate('bg', 'en');
+
+                $entities[$data->id]['flavour_variations'] = array_map(function ($variations) use ($data) {
+
+                    $variations['flavour_id'] === $data->id ?: [$variations];
+                }, $flavours_variations);
+
+                $entities[$data->id]['flavour_variations'] = FlavourVariation::where('flavour_id', $data->id)->get();
+
                 $entities[$data->id]['image'] = ImageService::absolutePath($entities[$data->id]['image'], $request);
 
                 if (!is_null($data->image_gallery)) {
@@ -53,7 +69,6 @@ class TranslationsHelper
 
 
     }
-
 
     /**
      * @param $data
@@ -83,13 +98,13 @@ class TranslationsHelper
             }
         }
 
-        $result = $this->formatedResults($data, $translated, $current_page,$statusCodes);
+        $result = $this->formatedResults($data, $translated, $current_page, $statusCodes);
 
         return $result;
 
     }
 
-    private function formatedResults($data, $items, $current_page,StatusCodes $statusCodes)
+    private function formatedResults($data, $items, $current_page, StatusCodes $statusCodes)
     {
         $paginatior = new \stdClass();
         $flavours = [];
@@ -121,7 +136,7 @@ class TranslationsHelper
         $paginatior->current_page = $itemsTransformedAndPaginated->currentPage();
         $paginatior->per_page = $itemsTransformedAndPaginated->perPage();
 
-        return ['paginator' => $paginatior, 'data' => $flavours,'status_code' =>$status_code];
+        return ['paginator' => $paginatior, 'data' => $flavours, 'status_code' => $status_code];
 
 
     }
