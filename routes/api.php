@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CartsApiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,6 +29,15 @@ Route::post('/users/get-user-by-id', [App\Http\Controllers\UsersApiController::c
 Route::post('/users/register-user', [App\Http\Controllers\UsersApiController::class, 'registerUser']);
 Route::post('/users/login-user', [App\Http\Controllers\UsersApiController::class, 'loginUser']);
 Route::put('/users/update-user/{id}', [App\Http\Controllers\UsersApiController::class, 'updateUser']);
+
+
+//Cart Endpoints
+Route::group(['prefix' => 'cart', 'as' => 'cart.'], function () {
+    Route::get('/get-cart', [App\Http\Controllers\CartsApiController::class, 'getCart']);
+    Route::post('/add-to-cart', [App\Http\Controllers\CartsApiController::class, 'addToCart']);
+    Route::post('/remove-from-cart', [App\Http\Controllers\CartsApiController::class, 'removeFromCart']);
+
+});
 //Route::middleware('auth:api')->get('/user', function (Request $request) {
 //    return $request->user();
 //});
