@@ -33,7 +33,7 @@ Route::put('/users/update-user/{id}', [App\Http\Controllers\UsersApiController::
 
 //Cart Endpoints
 Route::group(['prefix' => 'cart', 'as' => 'cart.'], function () {
-    Route::get('/get-cart', [App\Http\Controllers\CartsApiController::class, 'getCart']);
+    Route::post('/get-cart', [App\Http\Controllers\CartsApiController::class, 'getCart']);
     Route::post('/add-to-cart', [App\Http\Controllers\CartsApiController::class, 'addToCart']);
     Route::post('/remove-from-cart', [App\Http\Controllers\CartsApiController::class, 'removeFromCart']);
 
