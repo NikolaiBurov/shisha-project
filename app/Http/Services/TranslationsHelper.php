@@ -30,9 +30,13 @@ class TranslationsHelper
                 if (!$data->translations->isEmpty()) {
                     $entities[$data->id] = $data->translate('en', 'bg');
 
-                    $entities[$data->id]['flavour_variations'] = array_map(function ($variations) use ($data) {
-                        $variations['flavour_id'] === $data->id ?: [$variations];
-                    }, $flavours_variations);
+
+                    $entities[$data->id]['flavour_variations'] = array_values(array_filter(array_map(function ($variations) use ($data) {
+                        if ($variations['flavour_id'] === $data->id){
+                            return $variations;
+                        }
+
+                    }, $flavours_variations)));
 
                     $entities[$data->id]['image'] = ImageService::absolutePath($entities[$data->id]['image'], $request);
 
@@ -46,10 +50,12 @@ class TranslationsHelper
 
                 $entities[$data->id] = $data->translate('bg', 'en');
 
-                $entities[$data->id]['flavour_variations'] = array_map(function ($variations) use ($data) {
+                 $entities[$data->id]['flavour_variations'] = array_values(array_filter(array_map(function ($variations) use ($data) {
+                        if ($variations['flavour_id'] === $data->id){
+                            return $variations;
+                        }
 
-                    $variations['flavour_id'] === $data->id ?: [$variations];
-                }, $flavours_variations);
+                    }, $flavours_variations)));
 
                 $entities[$data->id]['flavour_variations'] = FlavourVariation::where('flavour_id', $data->id)->get();
 
