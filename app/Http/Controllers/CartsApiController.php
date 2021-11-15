@@ -12,6 +12,7 @@ use App\Http\Services\ErrorService;
 use App\Http\Constants\StatusCodes;
 use App\Models\PublicUser;
 use App\Models\Cart;
+use  App\Http\Services\CartHelper;
 use Validator;
 
 class CartsApiController extends Controller
@@ -20,14 +21,21 @@ class CartsApiController extends Controller
     private $users;
     private $flavours;
     private $flavour_variations;
+    private $cart_helper;
 
-    public function __construct(PublicUser $users, Flavour $flavour, FlavourVariation $flavour_variations, StatusCodes $status_codes, ErrorService $errorService)
+    public function __construct(PublicUser       $users,
+                                Flavour          $flavour,
+                                FlavourVariation $flavour_variations,
+                                StatusCodes      $status_codes,
+                                ErrorService     $errorService,
+                                CartHelper       $cart_helper)
     {
         $this->users = $users;
         $this->flavours = $flavour;
         $this->flavour_variations = $flavour_variations;
         $this->status_codes = $status_codes;
         $this->error_service = $errorService;
+        $this->cart_helper = $cart_helper;
     }
 
     /**
@@ -68,9 +76,9 @@ class CartsApiController extends Controller
 
             return new JsonResponse($response);
         }
-        $cart = Cart::where('user_id', $data['user_id'])->get();
+        $cart = Cart::where('user_id', $data['user_id'])->get()->toArray();
 
-        if ($cart->isEmpty()) {
+        if (empty($cart)) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[1],
                 'error_message' => $this->status_codes->postRequests()->{"200"}{'empty_cart'},
@@ -78,9 +86,14 @@ class CartsApiController extends Controller
             ];
             return new JsonResponse($response);
         }
+        $flavours = $this->flavours::all()->toArray();
+        $flavour_variations = $this->flavour_variations::all()->toArray();
+
+        $mapped_flavours = $this->cart_helper->mapProducts($flavours, $flavour_variations, $cart);
+
         $response = [
             'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
-            'data' => $cart,
+            'data' => $mapped_flavours,
             'error_message' => null
         ];
         return new JsonResponse($response);
@@ -122,7 +135,7 @@ class CartsApiController extends Controller
         if (!$this->flavours::where('id', $data['flavour_id'])->exists()) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[1],
-                'error_message' =>  $this->status_codes->postRequests()->{"200"}{'flavour_not_exists'},
+                'error_message' => $this->status_codes->postRequests()->{"200"}{'flavour_not_exists'},
                 'data' => null
             ];
 
@@ -138,6 +151,20 @@ class CartsApiController extends Controller
 
             return new JsonResponse($response);
         }
+        //check if this variation belongs to given flavour
+        if(!$this->flavour_variations::where('id', $data['flavour_variation_id'])
+            ->where('flavour_id', $data['flavour_id'])
+            ->exists()){
+
+            $response = [
+                'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[1],
+                'error_message' =>  $this->status_codes->postRequests()->{"200"}{'wrong_variation'},
+                'data' => null
+            ];
+
+            return new JsonResponse($response);
+        }
+
 
         //check if exists
         $cart = Cart::where('user_id', $data['user_id'])
@@ -161,6 +188,7 @@ class CartsApiController extends Controller
         } else {
 
             try {
+
                 $save = Cart::create($data);
             } catch (\Exception $e) {
                 $response = ['status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[1], 'data' => null, 'error_message' => $e->getMessage()];
