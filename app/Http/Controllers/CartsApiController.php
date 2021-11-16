@@ -76,7 +76,7 @@ class CartsApiController extends Controller
 
             return new JsonResponse($response);
         }
-        $cart = Cart::where('user_id', $data['user_id'])->get()->toArray();
+        $cart = Cart::where('user_id', $data['user_id'])->orderBy('id', 'ASC')->get()->toArray();
 
         if (empty($cart)) {
             $response = [
@@ -86,10 +86,8 @@ class CartsApiController extends Controller
             ];
             return new JsonResponse($response);
         }
-        $flavours = $this->flavours::all()->toArray();
-        $flavour_variations = $this->flavour_variations::all()->toArray();
 
-        $mapped_flavours = $this->cart_helper->mapProducts($flavours, $flavour_variations, $cart);
+        $mapped_flavours = $this->cart_helper->mapProducts($cart);
 
         $response = [
             'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
