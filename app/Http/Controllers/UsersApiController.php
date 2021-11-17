@@ -194,7 +194,7 @@ class UsersApiController
 
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
-                'data' => $this->status_codes->postRequests(['id' => $user->id])->{"200"}{'user_created'},
+                'data' => $user,
                 'error_message' => null
             ];
 
