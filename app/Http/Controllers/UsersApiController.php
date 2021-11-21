@@ -124,7 +124,7 @@ class UsersApiController
 
         if (empty($loaded_user)) {
             $response = [
-                'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
+                'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[4],
                 'error_message' => $this->status_codes->postRequests()->{"200"}{'non_existent_user'},
                 'data' => null
             ];
