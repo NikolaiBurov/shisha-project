@@ -26,7 +26,9 @@ class StatusCodes
                 'user_not_exists' => 'User does not exists',
                 'flavour_not_exists' => 'Flavour with such id does not exist',
                 'flavour_variation_exists' => 'Flavour variation with such id does not exist',
-                'wrong_variation' => 'Given variation id  is not matching given flavour'
+                'wrong_variation' => 'Given variation id  is not matching given flavour',
+                'cart_exists' => 'Cart does not exists',
+                'cart_entity_deleted' =>  isset($data) ? "Cart record with id {$data->id}  was deleted" : "",
             ],
             '404' => 'NotFound',
             '400' => 'Bad request',
