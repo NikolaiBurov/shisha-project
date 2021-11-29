@@ -21,60 +21,35 @@ class TranslationsHelper
     public function languangeMapper(string $language, $products, Request $request)
     {
         $entities = [];
-        $response = [];
         $flavours_variations = FlavourVariation::all()->toArray();
 
         foreach ($products as $item => $data) {
 
-            if ($language == 'en') {
-                if (!$data->translations->isEmpty()) {
-                    $entities[$data->id] = $data->translate('en', 'bg');
+            if (!$data->translations->isEmpty()) {
+                $entities[$data->id] = $data->translate($language, 'bg');
 
 
-                    $entities[$data->id]['flavour_variations'] = array_values(array_filter(array_map(function ($variations) use ($data) {
-                        if ($variations['flavour_id'] === $data->id){
-                            return $variations;
-                        }
-
-                    }, $flavours_variations)));
-
-                    $entities[$data->id]['image'] = ImageService::absolutePath($entities[$data->id]['image'], $request);
-
-
-                    if (!is_null($data->image_gallery)) {
-                        $entities[$data->id]['image_gallery'] = ImageService::multipleImagesAbsolutePath($entities[$data->id]['image_gallery'], $request);
+                $entities[$data->id]['flavour_variations'] = array_values(array_filter(array_map(function ($variations) use ($data) {
+                    if ($variations['flavour_id'] === $data->id) {
+                        return $variations;
                     }
-                }
 
-            } elseif ($language == 'bg') {
-
-                $entities[$data->id] = $data->translate('bg', 'en');
-
-                 $entities[$data->id]['flavour_variations'] = array_values(array_filter(array_map(function ($variations) use ($data) {
-                        if ($variations['flavour_id'] === $data->id){
-                            return $variations;
-                        }
-
-                    }, $flavours_variations)));
-
-                $entities[$data->id]['flavour_variations'] = FlavourVariation::where('flavour_id', $data->id)->get();
+                }, $flavours_variations)));
 
                 $entities[$data->id]['image'] = ImageService::absolutePath($entities[$data->id]['image'], $request);
+
 
                 if (!is_null($data->image_gallery)) {
                     $entities[$data->id]['image_gallery'] = ImageService::multipleImagesAbsolutePath($entities[$data->id]['image_gallery'], $request);
                 }
-
             }
+
         }
 
-        foreach ($entities as $id => $collection) {
-            $response[] = $collection;
-        }
-        return $response;
-
+        return array_values($entities);
 
     }
+
 
     /**
      * @param $data
@@ -90,27 +65,14 @@ class TranslationsHelper
         $flavours_variations = FlavourVariation::all()->toArray();
 
         foreach ($data->getCollection() as $item => $context) {
-            if ($language == 'en') {
-                if (!$context->translations->isEmpty()) {
-                    $translated[$context->id] = $context->translate('en', 'bg');
 
-                    $translated[$context->id]['image'] = ImageService::absolutePath($translated[$context->id]['image'], $request);
-
-                    $translated[$context->id]['flavour_variations'] = array_values(array_filter(array_map(function ($variations) use ($context) {
-                        if ($variations['flavour_id'] === $context->id){
-                            return $variations;
-                        }
-
-                    }, $flavours_variations)));
-                }
-
-            } elseif ($language == 'bg') {
-                $translated[$context->id] = $context->translate('bg', 'en');
+            if (!$context->translations->isEmpty()) {
+                $translated[$context->id] = $context->translate($language, 'bg');
 
                 $translated[$context->id]['image'] = ImageService::absolutePath($translated[$context->id]['image'], $request);
 
                 $translated[$context->id]['flavour_variations'] = array_values(array_filter(array_map(function ($variations) use ($context) {
-                    if ($variations['flavour_id'] === $context->id){
+                    if ($variations['flavour_id'] === $context->id) {
                         return $variations;
                     }
 
@@ -118,7 +80,6 @@ class TranslationsHelper
 
             }
         }
-
         $result = $this->formatedResults($data, $translated, $current_page, $statusCodes);
 
         return $result;
