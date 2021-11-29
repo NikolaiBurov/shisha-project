@@ -87,6 +87,7 @@ class TranslationsHelper
     public function paginatorHelper($data, $language, Request $request, StatusCodes $statusCodes, $current_page)
     {
         $translated = [];
+        $flavours_variations = FlavourVariation::all()->toArray();
 
         foreach ($data->getCollection() as $item => $context) {
             if ($language == 'en') {
@@ -94,12 +95,26 @@ class TranslationsHelper
                     $translated[$context->id] = $context->translate('en', 'bg');
 
                     $translated[$context->id]['image'] = ImageService::absolutePath($translated[$context->id]['image'], $request);
+
+                    $translated[$context->id]['flavour_variations'] = array_values(array_filter(array_map(function ($variations) use ($context) {
+                        if ($variations['flavour_id'] === $context->id){
+                            return $variations;
+                        }
+
+                    }, $flavours_variations)));
                 }
 
             } elseif ($language == 'bg') {
                 $translated[$context->id] = $context->translate('bg', 'en');
 
                 $translated[$context->id]['image'] = ImageService::absolutePath($translated[$context->id]['image'], $request);
+
+                $translated[$context->id]['flavour_variations'] = array_values(array_filter(array_map(function ($variations) use ($context) {
+                    if ($variations['flavour_id'] === $context->id){
+                        return $variations;
+                    }
+
+                }, $flavours_variations)));
 
             }
         }
