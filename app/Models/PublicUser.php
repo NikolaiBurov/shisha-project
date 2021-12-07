@@ -23,7 +23,7 @@ class PublicUser extends Model
         'created' =>  \App\Events\NewUser::class
     ];
 
-    public static  function UserDTO(PublicUser $user) : string {
+    public static  function DTO(PublicUser $user) : string {
         return "USERNAME:{$user->username} ,FIRSTNAME:{$user->first_name},LASTNAME:{$user->last_name} ,EMAIL:{$user->email} ,ADDRESS:{$user->address}, CITY:{$user->city}";
     }
 }

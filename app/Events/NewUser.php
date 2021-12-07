@@ -23,7 +23,7 @@ class NewUser
      */
     public function __construct(PublicUser $user)
     {
-        $this->user = PublicUser::UserDTO($user);
+        $this->user = PublicUser::DTO($user);
     }
 
     /**
