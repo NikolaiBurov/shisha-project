@@ -290,7 +290,7 @@ class UsersApiController
             return new JsonResponse($response);
         }
         $response = [
-            'status_code' =>  array_keys(get_object_vars($this->status_codes->postRequests()))[4],
+            'status_code' =>  array_keys(get_object_vars($this->status_codes->postRequests()))[0],
             'data' => $loaded_user,
             'error_message' => null
         ];
