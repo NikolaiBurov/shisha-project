@@ -264,4 +264,37 @@ class UsersApiController
         return new JsonResponse($response);
     }
 
+    /**
+     * @return JsonResponse
+     */
+    public function getUserByEmail(Request $request): JsonResponse
+    {
+        $email = $request->get('email');
+
+        if (empty($email)) {
+            $response = [
+                'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[3],
+                'error_message' => $this->status_codes->postRequests()->{"406"}{'incorrect_Data'},
+                'data' => null
+            ];
+            return new JsonResponse($response);
+        }
+        $loaded_user = $this->users::where('email', $email)->first();
+
+        if (empty($loaded_user)) {
+            $response = [
+                'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[4],
+                'error_message' => $this->status_codes->postRequests()->{"200"}{'non_existent_user_email'},
+                'data' => null
+            ];
+            return new JsonResponse($response);
+        }
+        $response = [
+            'status_code' =>  array_keys(get_object_vars($this->status_codes->postRequests()))[4],
+            'data' => $loaded_user,
+            'error_message' => null
+        ];
+
+        return new JsonResponse($response);
+    }
 }

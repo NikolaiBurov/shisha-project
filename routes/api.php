@@ -24,12 +24,14 @@ Route::get('/get-all-categories', [App\Http\Controllers\ProductsApiController::c
 
 
 //Users Endpoints
-Route::get('/users/get-all-users', [App\Http\Controllers\UsersApiController::class, 'getAllUsers']);
-Route::post('/users/get-user-by-id', [App\Http\Controllers\UsersApiController::class, 'getUserById']);
-Route::post('/users/register-user', [App\Http\Controllers\UsersApiController::class, 'registerUser']);
-Route::post('/users/login-user', [App\Http\Controllers\UsersApiController::class, 'loginUser']);
-Route::put('/users/update-user/{id}', [App\Http\Controllers\UsersApiController::class, 'updateUser']);
-
+Route::group(['prefix' => 'users'], function () {
+    Route::get('/get-all-users', [App\Http\Controllers\UsersApiController::class, 'getAllUsers']);
+    Route::post('/get-user-by-id', [App\Http\Controllers\UsersApiController::class, 'getUserById']);
+    Route::post('/register-user', [App\Http\Controllers\UsersApiController::class, 'registerUser']);
+    Route::post('/login-user', [App\Http\Controllers\UsersApiController::class, 'loginUser']);
+    Route::put('/update-user/{id}', [App\Http\Controllers\UsersApiController::class, 'updateUser']);
+    Route::post('/get-user-by-email', [App\Http\Controllers\UsersApiController::class, 'getUserByEmail']);
+});
 
 //Cart Endpoints
 Route::group(['prefix' => 'cart', 'as' => 'cart.'], function () {
