@@ -267,11 +267,12 @@ class UsersApiController
     /**
      * @return JsonResponse
      */
-    public function getUserByEmail(Request $request): JsonResponse
+    public function getUserByEmailOrUsername(Request $request): JsonResponse
     {
         $email = $request->get('email');
+        $username = $request->get('username');
 
-        if (empty($email)) {
+        if (empty($email) && empty($username)) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[3],
                 'error_message' => $this->status_codes->postRequests()->{"406"}{'incorrect_Data'},
@@ -279,7 +280,17 @@ class UsersApiController
             ];
             return new JsonResponse($response);
         }
-        $loaded_user = $this->users::where('email', $email)->first();
+        $query = $this->users::query();
+
+        if ($request->filled('username')) {
+            $query = $query->where('username',  $username);
+        }
+
+        if ($request->filled('email')) {
+            $query = $query->where('email', $email);
+        }
+
+        $loaded_user = $query->get()->toArray();
 
         if (empty($loaded_user)) {
             $response = [

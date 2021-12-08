@@ -17,7 +17,7 @@ class StatusCodes
                 'wrong_data_type' => 'Provided value is not of type array',
                 'user_created' => isset($data) ? "User with id {$data['id']} created" : "",
                 'non_existent_user' => 'User with such username doesnt exist',
-                'non_existent_user_email' => 'User with such email doesnt exist',
+                'non_existent_user_email' => 'User with such email or username doesnt exist',
                 'non_existent_user_id' => isset($data) ? "User with id {$data['id']} doesnt exist" : "",
                 'incorrect_password' => 'Password doesnt match',
                 'update_failed' => 'Failed to update',

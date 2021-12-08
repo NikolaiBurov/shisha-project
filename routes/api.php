@@ -30,7 +30,7 @@ Route::group(['prefix' => 'users'], function () {
     Route::post('/register-user', [App\Http\Controllers\UsersApiController::class, 'registerUser']);
     Route::post('/login-user', [App\Http\Controllers\UsersApiController::class, 'loginUser']);
     Route::put('/update-user/{id}', [App\Http\Controllers\UsersApiController::class, 'updateUser']);
-    Route::post('/get-user-by-email', [App\Http\Controllers\UsersApiController::class, 'getUserByEmail']);
+    Route::post('/get-user-by-email-or-username', [App\Http\Controllers\UsersApiController::class, 'getUserByEmailOrUsername']);
 });
 
 //Cart Endpoints
