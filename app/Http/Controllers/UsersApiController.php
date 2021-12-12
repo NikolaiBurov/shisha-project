@@ -302,7 +302,7 @@ class UsersApiController
             $query = $query->where('email', $email);
         }
 
-        $loaded_user = $query->get()->toArray();
+        $loaded_user = $query->first();
 
         if (empty($loaded_user)) {
             $response = [
@@ -312,6 +312,9 @@ class UsersApiController
             ];
             return new JsonResponse($response);
         }
+
+        unset($loaded_user->password);
+
         $response = [
             'status_code' =>  array_keys(get_object_vars($this->status_codes->postRequests()))[0],
             'data' => $loaded_user,
