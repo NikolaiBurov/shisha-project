@@ -16,7 +16,7 @@ class StatusCodes
                 'empty_users' => 'Users list is empty',
                 'wrong_data_type' => 'Provided value is not of type array',
                 'user_created' => isset($data) ? "User with id {$data['id']} created" : "",
-                'non_existent_user' => 'User with such username doesnt exist',
+                'non_existent_user' => 'User with such username or email doesnt exist',
                 'non_existent_user_email' => 'User with such email or username doesnt exist',
                 'non_existent_user_id' => isset($data) ? "User with id {$data['id']} doesnt exist" : "",
                 'incorrect_password' => 'Password doesnt match',

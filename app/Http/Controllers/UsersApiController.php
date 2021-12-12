@@ -109,9 +109,10 @@ class UsersApiController
     public function loginUser(Request $request): JsonResponse
     {
         $username = $request->get('username');
+        $email = $request->get('email');
         $password = $request->get('password');
 
-        if (empty($username) || empty($password)) {
+        if (empty($username) && empty($email) || empty($password) ) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[3],
                 'error_message' => $this->status_codes->postRequests()->{"406"}{'incorrect_Data'},
@@ -119,8 +120,18 @@ class UsersApiController
             ];
             return new JsonResponse($response);
         }
-        $loaded_user = $this->users::where('username', $username)
-            ->first();
+
+        $query = $this->users::query();
+
+        if ($request->filled('username')) {
+            $query = $query->where('username',  $username);
+        }
+
+        if ($request->filled('email')) {
+            $query = $query->where('email', $email);
+        }
+
+        $loaded_user = $query->first();
 
         if (empty($loaded_user)) {
             $response = [
@@ -130,6 +141,7 @@ class UsersApiController
             ];
             return new JsonResponse($response);
         }
+
         if ($loaded_user->password === $password) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
