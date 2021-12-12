@@ -108,11 +108,11 @@ class UsersApiController
      */
     public function loginUser(Request $request): JsonResponse
     {
-        $username = $request->get('username');
-        $email = $request->get('email');
+        $field = $request->get('username_or_email');
+
         $password = $request->get('password');
 
-        if (empty($username) && empty($email) || empty($password) ) {
+        if (empty($field) || empty($password) ) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[3],
                 'error_message' => $this->status_codes->postRequests()->{"406"}{'incorrect_Data'},
@@ -123,13 +123,10 @@ class UsersApiController
 
         $query = $this->users::query();
 
-        if ($request->filled('username')) {
-            $query = $query->where('username',  $username);
-        }
-
-        if ($request->filled('email')) {
-            $query = $query->where('email', $email);
-        }
+        if(filter_var($field, FILTER_VALIDATE_EMAIL))
+            $query = $query->where('email', $field);
+        else
+            $query = $query->where('username', $field);
 
         $loaded_user = $query->first();
 
@@ -281,10 +278,9 @@ class UsersApiController
      */
     public function getUserByEmailOrUsername(Request $request): JsonResponse
     {
-        $email = $request->get('email');
-        $username = $request->get('username');
+        $field = $request->get('username_or_email');
 
-        if (empty($email) && empty($username)) {
+        if (empty($field)) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[3],
                 'error_message' => $this->status_codes->postRequests()->{"406"}{'incorrect_Data'},
@@ -294,13 +290,10 @@ class UsersApiController
         }
         $query = $this->users::query();
 
-        if ($request->filled('username')) {
-            $query = $query->where('username',  $username);
-        }
-
-        if ($request->filled('email')) {
-            $query = $query->where('email', $email);
-        }
+        if(filter_var($field, FILTER_VALIDATE_EMAIL))
+            $query = $query->where('email', $field);
+        else
+            $query = $query->where('username', $field);
 
         $loaded_user = $query->first();
 
