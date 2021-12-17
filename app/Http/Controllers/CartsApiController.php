@@ -18,25 +18,6 @@ use Validator;
 class CartsApiController extends Controller
 {
     private $fields = [];
-    private $users;
-    private $flavours;
-    private $flavour_variations;
-    private $cart_helper;
-
-    public function __construct(PublicUser       $users,
-                                Flavour          $flavour,
-                                FlavourVariation $flavour_variations,
-                                StatusCodes      $status_codes,
-                                ErrorService     $errorService,
-                                CartHelper       $cart_helper)
-    {
-        $this->users = $users;
-        $this->flavours = $flavour;
-        $this->flavour_variations = $flavour_variations;
-        $this->status_codes = $status_codes;
-        $this->error_service = $errorService;
-        $this->cart_helper = $cart_helper;
-    }
 
     /**
      * @return array
@@ -87,7 +68,7 @@ class CartsApiController extends Controller
             return new JsonResponse($response);
         }
 
-        $mapped_flavours = $this->cart_helper->mapProducts($cart);
+        $mapped_flavours = $this->cart_helper->mapProducts($cart,$request);
 
         $response = [
             'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],

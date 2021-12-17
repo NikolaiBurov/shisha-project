@@ -7,10 +7,10 @@ use App\Models\Flavour;
 use App\Models\FlavourVariation;
 use App\Models\PublicUser;
 use Illuminate\Support\Collection;
+use App\Http\Services\ImageService;
 
 class CartHelper
 {
-
 
     /**
      * @var Flavour
@@ -23,13 +23,20 @@ class CartHelper
     private $flavour_variations;
 
 
-    public function __construct(Flavour $flavour, FlavourVariation $flavour_variations)
+    /**
+     * @var ImageService
+     */
+    private $image_service;
+
+
+    public function __construct(Flavour $flavour, FlavourVariation $flavour_variations, ImageService $imageService)
     {
         $this->flavours = $flavour;
         $this->flavour_variations = $flavour_variations;
+        $this->image_service = $imageService;
     }
 
-    private function getMappedFlavours($cart = null): array
+    private function getMappedFlavours($cart = null, $request): array
     {
         $flavours = [];
         $mapped_flavours = [];
@@ -38,7 +45,11 @@ class CartHelper
             foreach ($cart as $index => $value) {
                 $flavours[] = $value['flavour_id'];
             }
-            $mapped_flavours = $this->flavours::whereIn('id', $flavours)->get()->toArray();
+            $mapped_flavours = $this->image_service->transformFromCollection($this->flavours::whereIn('id', $flavours)
+                ->get()
+                ->makeHidden(['image_gallery'])
+                ->toArray(), $request);
+
         }
         return $mapped_flavours;
     }
@@ -46,13 +57,13 @@ class CartHelper
     private function getMappedVariations($cart = null)
     {
         $all_variations = $this->flavour_variations::all()->toArray();
-        $cart_variations = array_column($cart,'quantity','flavour_variation_id');
+        $cart_variations = array_column($cart, 'quantity', 'flavour_variation_id');
         $mapped_variations = [];
         if (isset($cart)) {
             foreach ($all_variations as $index => $variation) {
-                if(isset($cart_variations[$variation['id']]))
-                     $variation['quantity'] = $cart_variations[$variation['id']];
-                     $mapped_variations[] = $variation;
+                if (isset($cart_variations[$variation['id']]))
+                    $variation['quantity'] = $cart_variations[$variation['id']];
+                $mapped_variations[] = $variation;
             }
             $mapped_variations = array_filter(array_unique($mapped_variations, SORT_REGULAR));
         }
@@ -63,15 +74,14 @@ class CartHelper
      * @param $flavours
      * @param $flavour_variations
      * @param $cart
-     * @todo refactor
-     *
      */
-    public function mapProducts($cart)
+    public function mapProducts($cart, $request)
     {
-        $mapped_flavours = $this->getMappedFlavours($cart);
+        $mapped_flavours = $this->getMappedFlavours($cart, $request);
         $mapped_variations = $this->getMappedVariations($cart);
 
         foreach ($mapped_flavours as $index_f => $mapped_flavour) {
+
             foreach ($mapped_variations as $index_v => $mapped_variation) {
 
                 if ($mapped_flavour['id'] === $mapped_variation['flavour_id']) {

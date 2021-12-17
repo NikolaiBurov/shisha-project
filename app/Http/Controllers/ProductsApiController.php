@@ -14,22 +14,6 @@ use App\Http\Services\TranslationsHelper;
 class ProductsApiController extends Controller
 {
 
-    /**
-     * @var StatusCodes
-     */
-    private $status_codes;
-
-
-    /**
-     * @var TranslationsHelper
-     */
-    private $translation_helper;
-
-    public function __construct(TranslationsHelper $translationsHelper)
-    {
-        $this->translation_helper = $translationsHelper;
-        $this->status_codes = (new StatusCodes());
-    }
 
     public function getAllFlavours(Request $request): ?JsonResponse
     {

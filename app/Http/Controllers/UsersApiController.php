@@ -13,19 +13,10 @@ use App\Models\PublicUser;
 use Validator;
 use Illuminate\Support\Facades\Hash;
 
-class UsersApiController
+class UsersApiController extends Controller
 {
-    private $users;
-    private $status_codes = [];
-    private $error_service;
     private $fields = [];
 
-    public function __construct(PublicUser $users, StatusCodes $status_codes, ErrorService $errorService)
-    {
-        $this->users = $users;
-        $this->status_codes = $status_codes;
-        $this->error_service = $errorService;
-    }
 
     /**
      * @return array
@@ -112,7 +103,7 @@ class UsersApiController
 
         $password = $request->get('password');
 
-        if (empty($field) || empty($password) ) {
+        if (empty($field) || empty($password)) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[3],
                 'error_message' => $this->status_codes->postRequests()->{"406"}{'incorrect_Data'},
@@ -123,12 +114,12 @@ class UsersApiController
 
         $query = $this->users::query();
 
-        if(filter_var($field, FILTER_VALIDATE_EMAIL))
+        if (filter_var($field, FILTER_VALIDATE_EMAIL))
             $query = $query->where('email', $field);
         else
             $query = $query->where('username', $field);
 
-        $loaded_user = $query->first();
+        $loaded_user = $query->first()->makeHidden(['password']);
 
         if (empty($loaded_user)) {
             $response = [
@@ -290,7 +281,7 @@ class UsersApiController
         }
         $query = $this->users::query();
 
-        if(filter_var($field, FILTER_VALIDATE_EMAIL))
+        if (filter_var($field, FILTER_VALIDATE_EMAIL))
             $query = $query->where('email', $field);
         else
             $query = $query->where('username', $field);
@@ -309,7 +300,7 @@ class UsersApiController
         unset($loaded_user->password);
 
         $response = [
-            'status_code' =>  array_keys(get_object_vars($this->status_codes->postRequests()))[0],
+            'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
             'data' => $loaded_user,
             'error_message' => null
         ];

@@ -6,16 +6,15 @@ use Illuminate\Http\Request;
 
 class ImageService
 {
-    /**
-     * @var
-     */
-    private $images_path;
 
-    public function __construct($images_path)
-    {
-        $this->images_path = $images_path;
+    public function transformFromCollection($obj,Request $request){
+        $path = $request->getSchemeAndHttpHost();
+
+        foreach ($obj as $index => $item) {
+           $obj[$index]['image'] =  $path . '/storage/' . $item['image'];
+        }
+        return $obj;
     }
-
     /**
      * @param null $data
      * @param Request $request
