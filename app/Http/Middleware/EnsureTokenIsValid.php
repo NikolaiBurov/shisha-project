@@ -22,6 +22,23 @@ class EnsureTokenIsValid
         $this->payload = \config('app.JWT_PAYLOAD');
     }
 
+
+    /**
+     * Removes fileds from given token
+     * @param $token
+     * @return array
+     */
+    private function cleanToken($token)
+    {
+        $token = (array)$token;
+
+        foreach (['exp', 'iat', 'nbf'] as $item) {
+            unset($token[$item]);
+        }
+
+        return $token;
+    }
+
     /**
      * Handle an incoming request.
      *
@@ -32,12 +49,13 @@ class EnsureTokenIsValid
     public function handle(Request $request, Closure $next)
     {
         try {
-            $decoded_token = (array)JWT::decode(getallheaders()['jwt_token'], new Key($this->key, 'HS256'));
-            if(array_diff($decoded_token,$this->payload)){
+            $decoded_token = $this->cleanToken(JWT::decode(getallheaders()['jwt_token'], new Key($this->key, 'HS256')));
+
+            if (array_diff($decoded_token, $this->payload)) {
                 return new JsonResponse(['jwt_error_message' => 'Token mismatch']);
             }
 
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             return new JsonResponse(['jwt_error_message' => $e->getMessage()]);
         }
 
