@@ -29,8 +29,9 @@ class EnsureTokenIsValid
      */
     public function handle(Request $request, Closure $next)
     {
+
         try {
-            JWT::decode($request->get('jwt_key'), new Key($this->key, 'HS256'));
+            JWT::decode(getallheaders()['jwt_token'], new Key($this->key, 'HS256'));
         }catch (\Exception $e){
             return new JsonResponse(['jwt_error_message' => $e->getMessage()]);
         }
