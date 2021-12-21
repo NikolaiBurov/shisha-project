@@ -14,10 +14,12 @@ use JWTAuth;
 class EnsureTokenIsValid
 {
     protected $key;
+    protected $payload;
 
     public function __construct()
     {
         $this->key = \config('app.JWT_KEY');
+        $this->payload = \config('app.JWT_PAYLOAD');
     }
 
     /**
@@ -29,9 +31,12 @@ class EnsureTokenIsValid
      */
     public function handle(Request $request, Closure $next)
     {
-
         try {
-            JWT::decode(getallheaders()['jwt_token'], new Key($this->key, 'HS256'));
+            $decoded_token = (array)JWT::decode(getallheaders()['jwt_token'], new Key($this->key, 'HS256'));
+            if(array_diff($decoded_token,$this->payload)){
+                return new JsonResponse(['jwt_error_message' => 'Token mismatch']);
+            }
+
         }catch (\Exception $e){
             return new JsonResponse(['jwt_error_message' => $e->getMessage()]);
         }
