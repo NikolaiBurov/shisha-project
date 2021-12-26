@@ -57,15 +57,21 @@ class CartHelper
     private function getMappedVariations($cart = null)
     {
         $all_variations = $this->flavour_variations::all()->toArray();
-        $cart_variations = array_column($cart, 'quantity', 'flavour_variation_id');
         $mapped_variations = [];
         if (isset($cart)) {
-            foreach ($all_variations as $index => $variation) {
-                if (isset($cart_variations[$variation['id']]))
-                    $variation['quantity'] = $cart_variations[$variation['id']];
-                $mapped_variations[] = $variation;
+            //todo
+            foreach ($all_variations as $index => $all_variation) {
+                foreach ($cart as $index => $item) {
+                    if ($all_variation['id'] === $item['flavour_variation_id']) {
+                        $all_variation['quantity'] = $item['quantity'];
+                        $mapped_variations[] = $all_variation;
+                    }
+
+                }
+
             }
             $mapped_variations = array_filter(array_unique($mapped_variations, SORT_REGULAR));
+
         }
         return $mapped_variations;
     }
