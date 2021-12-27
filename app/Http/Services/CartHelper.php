@@ -54,26 +54,25 @@ class CartHelper
         return $mapped_flavours;
     }
 
+    /**
+     * With wherein query we make sure that only one variation is displayed with the added quantity
+     * @param null $cart
+     * @return array
+     */
     private function getMappedVariations($cart = null)
     {
-        $all_variations = $this->flavour_variations::all()->toArray();
-        $mapped_variations = [];
-        if (isset($cart)) {
-            //todo
-            foreach ($all_variations as $index => $all_variation) {
-                foreach ($cart as $index => $item) {
-                    if ($all_variation['id'] === $item['flavour_variation_id']) {
-                        $all_variation['quantity'] = $item['quantity'];
-                        $mapped_variations[] = $all_variation;
-                    }
+        $cart_variations = array_column($cart, 'flavour_variation_id', 'flavour_variation_id');
+        $matched_variations = $this->flavour_variations::whereIn('id', $cart_variations)->get()->toArray();
 
+        array_walk($cart, function ($value, $key) use (&$matched_variations) {
+            foreach ($matched_variations as $key => $variation) {
+                if ($value['flavour_variation_id'] === $variation['id']) {
+                    $matched_variations[$key]['quantity'] = $value['quantity'];
                 }
-
             }
-            $mapped_variations = array_filter(array_unique($mapped_variations, SORT_REGULAR));
+        });
 
-        }
-        return $mapped_variations;
+        return $matched_variations;
     }
 
     /**
