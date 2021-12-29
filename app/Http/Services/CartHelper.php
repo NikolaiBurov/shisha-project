@@ -42,15 +42,19 @@ class CartHelper
         $mapped_flavours = [];
 
         if (isset($cart)) {
-            foreach ($cart as $index => $value) {
-                $flavours[] = $value['flavour_id'];
-            }
-            $mapped_flavours = $this->image_service->transformFromCollection($this->flavours::whereIn('id', $flavours)
+
+            $flavours = $this->image_service->transformFromCollection($this->flavours::whereIn('id', array_column($cart, 'flavour_id', 'flavour_id'))
                 ->get()
                 ->makeHidden(['image_gallery'])
                 ->toArray(), $request);
 
+            array_walk($flavours, function ($value, $key) use (&$mapped_flavours) {
+                $value['description'] = strip_tags($value['description']);
+                $mapped_flavours[$key] = $value;
+            });
+
         }
+
         return $mapped_flavours;
     }
 
