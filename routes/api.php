@@ -23,6 +23,7 @@ Route::middleware([EnsureTokenIsValid::class])->group(function () {
     Route::post('/get-flavour-by-ids', [App\Http\Controllers\ProductsApiController::class, 'getFlavourByIds']);
     Route::post('/filter-flavours', [App\Http\Controllers\ProductsApiController::class, 'filterFlavours']);
     Route::get('/get-all-categories', [App\Http\Controllers\ProductsApiController::class, 'getAllCategories']);
+    Route::post('/related-products', [App\Http\Controllers\ProductsApiController::class, 'relatedProducts']);
 
 
 //Users Endpoints

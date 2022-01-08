@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Constants\StatusCodes;
 use App\Http\Services\CartHelper;
 use App\Http\Services\ErrorService;
+use App\Http\Services\ImageService;
 use App\Http\Services\TranslationsHelper;
 use App\Models\Flavour;
 use App\Models\FlavourVariation;
@@ -27,13 +28,24 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    public function __construct(PublicUser       $users,
-                                Flavour          $flavour,
-                                FlavourVariation $flavour_variations,
-                                StatusCodes      $status_codes,
-                                ErrorService     $errorService,
-                                CartHelper       $cart_helper,
-                                TranslationsHelper $translationsHelper
+    /**
+     * @param PublicUser $users
+     * @param Flavour $flavour
+     * @param FlavourVariation $flavour_variations
+     * @param StatusCodes $status_codes
+     * @param ErrorService $errorService
+     * @param CartHelper $cart_helper
+     * @param TranslationsHelper $translationsHelper
+     * @param ImageService $image_service
+     */
+    public function __construct(PublicUser         $users,
+                                Flavour            $flavour,
+                                FlavourVariation   $flavour_variations,
+                                StatusCodes        $status_codes,
+                                ErrorService       $errorService,
+                                CartHelper         $cart_helper,
+                                TranslationsHelper $translationsHelper,
+                                ImageService       $imageService
     )
     {
         $this->users = $users;
@@ -43,5 +55,6 @@ class Controller extends BaseController
         $this->error_service = $errorService;
         $this->cart_helper = $cart_helper;
         $this->translation_helper = $translationsHelper;
+        $this->image_service = $imageService;
     }
 }

@@ -19,14 +19,14 @@ class ProductsApiController extends Controller
     {
         $lang = $request->get('language');
 
-        $products_number =  $request->filled('items_per_page') ? $request->get('items_per_page') : 6;
+        $products_number = $request->filled('items_per_page') ? $request->get('items_per_page') : 6;
 
-        $current_page  = $request->filled('page') ? $request->get('page') : 1;
+        $current_page = $request->filled('page') ? $request->get('page') : 1;
 
 
-        $paginated = Flavour::query()->orderBy('id','asc')->paginate($products_number);
+        $paginated = Flavour::query()->orderBy('id', 'asc')->paginate($products_number);
 
-        $result = $this->translation_helper->paginatorHelper($paginated,$request->get('language'),$request,$this->status_codes,$current_page);
+        $result = $this->translation_helper->paginatorHelper($paginated, $request->get('language'), $request, $this->status_codes, $current_page);
 
         return new JsonResponse($result);
     }
@@ -222,9 +222,9 @@ class ProductsApiController extends Controller
 
         $response = Flavour::query();
 
-        $products_number =  $request->filled('items_per_page') ? $request->get('items_per_page') : 6;
+        $products_number = $request->filled('items_per_page') ? $request->get('items_per_page') : 6;
 
-        $current_page  = $request->filled('page') ? $request->get('page') : 1;
+        $current_page = $request->filled('page') ? $request->get('page') : 1;
 
         if ($request->filled('price_from')) {
             $response = $response->where('price', '>=', $request->get('price_from'));
@@ -246,10 +246,40 @@ class ProductsApiController extends Controller
 
         $paginated = $response->paginate($products_number);
 
-        $result = $this->translation_helper->paginatorHelper($paginated,$request->get('language'),$request,$this->status_codes,$current_page);
+        $result = $this->translation_helper->paginatorHelper($paginated, $request->get('language'), $request, $this->status_codes, $current_page);
 
-        return new JsonResponse( $result);
+        return new JsonResponse($result);
 
 
+    }
+
+    public function relatedProducts(Request $request)
+    {
+        if (empty($request->get('flavour_type'))) {
+            $response = [
+                'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[3],
+                'error_message' => $this->status_codes->postRequests()->{"406"}{'incorrect_Data'},
+                'data' => null
+            ];
+            return new JsonResponse($response);
+        }
+        $result = $this->image_service->transformFromCollection($this->flavours::where('flavour_type', $request->get('flavour_type'))->get(),
+            $request);
+
+        if ($result->isEmpty()) {
+            $response = [
+                'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[1],
+                'error_message' => $this->status_codes->postRequests()->{"200"}{'no_products'},
+                'data' => null
+            ];
+            return new JsonResponse($response);
+        }
+        $response = [
+            'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
+            'error_message' => null,
+            'data' => $result
+        ];
+
+        return new JsonResponse($result);
     }
 }

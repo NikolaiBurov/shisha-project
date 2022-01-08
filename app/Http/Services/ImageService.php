@@ -7,14 +7,20 @@ use Illuminate\Http\Request;
 class ImageService
 {
 
-    public function transformFromCollection($obj,Request $request){
+    public function transformFromCollection($obj, Request $request)
+    {
         $path = $request->getSchemeAndHttpHost();
 
         foreach ($obj as $index => $item) {
-           $obj[$index]['image'] =  $path . '/storage/' . $item['image'];
+            $obj[$index]['image'] = $path . '/storage/' . $item['image'];
+
+            if (isset($item['image_gallery'])) {
+                $obj[$index]['image_gallery'] = $this->multipleImagesAbsolutePath($item['image_gallery'], $request);
+            }
         }
         return $obj;
     }
+
     /**
      * @param null $data
      * @param Request $request
@@ -37,8 +43,8 @@ class ImageService
         $path = $request->getSchemeAndHttpHost();
         $result = [];
 
-        foreach (explode(",",str_replace(['"',"[","]",'\\'],"",$data))  as $index => $item) {
-            $result[] = $path .'/storage/'. $item;
+        foreach (explode(",", str_replace(['"', "[", "]", '\\'], "", $data)) as $index => $item) {
+            $result[] = $path . '/storage/' . $item;
         }
 
         return $result;
