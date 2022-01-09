@@ -114,12 +114,14 @@ class UsersApiController extends Controller
 
         $query = $this->users::query();
 
-        if (filter_var($field, FILTER_VALIDATE_EMAIL))
-            $query = $query->where('email', $field);
-        else
-            $query = $query->where('username', $field);
+        if (filter_var($field, FILTER_VALIDATE_EMAIL)) {
 
-        $loaded_user = $query->first()->makeHidden(['password']);
+            $query = $query->where('email', $field);
+        } else {
+            $query = $query->where('username', $field);
+        }
+
+        $loaded_user = $query->first();
 
         if (empty($loaded_user)) {
             $response = [
@@ -129,6 +131,7 @@ class UsersApiController extends Controller
             ];
             return new JsonResponse($response);
         }
+        $loaded_user->makeHidden(['password']);
 
         if ($loaded_user->password === $password) {
             $response = [
