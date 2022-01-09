@@ -7,6 +7,7 @@ use App\Http\Constants\StatusCodes;
 use App\Http\Services\ImageService;
 use Illuminate\Http\Request;
 use App\Models\FlavourVariation;
+use Illuminate\Support\Arr;
 
 
 class TranslationsHelper
@@ -38,8 +39,7 @@ class TranslationsHelper
 
                 $entities[$data->id]['image'] = ImageService::absolutePath($entities[$data->id]['image'], $request);
 
-
-                if (!is_null($data->image_gallery)) {
+                if (!is_null($data->image_gallery) && !$data->image_gallery->isEmpty()) {
                     $entities[$data->id]['image_gallery'] = ImageService::multipleImagesAbsolutePath($entities[$data->id]['image_gallery'], $request);
                 }
             }

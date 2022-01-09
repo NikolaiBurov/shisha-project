@@ -255,7 +255,7 @@ class ProductsApiController extends Controller
 
     public function relatedProducts(Request $request)
     {
-        if (empty($request->get('flavour_type'))) {
+        if (empty($request->get('flavour_type')) || empty($request->get('language'))) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[3],
                 'error_message' => $this->status_codes->postRequests()->{"406"}{'incorrect_Data'},
@@ -263,10 +263,11 @@ class ProductsApiController extends Controller
             ];
             return new JsonResponse($response);
         }
-        $result = $this->image_service->transformFromCollection($this->flavours::where('flavour_type', $request->get('flavour_type'))->get(),
+        $result = $this->translation_helper->languangeMapper($request->get('language'),
+            $this->flavours::where('flavour_type', $request->get('flavour_type'))->get(),
             $request);
 
-        if ($result->isEmpty()) {
+        if (empty($result)) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[1],
                 'error_message' => $this->status_codes->postRequests()->{"200"}{'no_products'},

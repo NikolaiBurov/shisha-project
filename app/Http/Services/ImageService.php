@@ -14,9 +14,6 @@ class ImageService
         foreach ($obj as $index => $item) {
             $obj[$index]['image'] = $path . '/storage/' . $item['image'];
 
-            if (isset($item['image_gallery'])) {
-                $obj[$index]['image_gallery'] = $this->multipleImagesAbsolutePath($item['image_gallery'], $request);
-            }
         }
         return $obj;
     }

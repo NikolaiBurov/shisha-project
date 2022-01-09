@@ -36,7 +36,6 @@ class Controller extends BaseController
      * @param ErrorService $errorService
      * @param CartHelper $cart_helper
      * @param TranslationsHelper $translationsHelper
-     * @param ImageService $image_service
      */
     public function __construct(PublicUser         $users,
                                 Flavour            $flavour,
@@ -44,8 +43,7 @@ class Controller extends BaseController
                                 StatusCodes        $status_codes,
                                 ErrorService       $errorService,
                                 CartHelper         $cart_helper,
-                                TranslationsHelper $translationsHelper,
-                                ImageService       $imageService
+                                TranslationsHelper $translationsHelper
     )
     {
         $this->users = $users;
@@ -55,6 +53,5 @@ class Controller extends BaseController
         $this->error_service = $errorService;
         $this->cart_helper = $cart_helper;
         $this->translation_helper = $translationsHelper;
-        $this->image_service = $imageService;
     }
 }

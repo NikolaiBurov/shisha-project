@@ -13,4 +13,8 @@ class Flavour extends Model
     use Translatable;
 
     protected $translatable = ['title', 'description', 'short_description'];
+
+   protected $casts = [
+        'image_gallery' => 'collection',
+    ];
 }
