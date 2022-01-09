@@ -130,9 +130,9 @@ class UsersApiController extends Controller
             ];
             return new JsonResponse($response);
         }
-        $loaded_user->makeHidden(['password']);
 
-        if ($loaded_user->password === $password) {
+        if (password_verify($request->get('password'),$loaded_user->password)) {
+            $loaded_user->makeHidden(['password']);
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
                 'data' => $loaded_user,
