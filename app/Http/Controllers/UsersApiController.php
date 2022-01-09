@@ -115,7 +115,6 @@ class UsersApiController extends Controller
         $query = $this->users::query();
 
         if (filter_var($field, FILTER_VALIDATE_EMAIL)) {
-
             $query = $query->where('email', $field);
         } else {
             $query = $query->where('username', $field);
@@ -194,6 +193,7 @@ class UsersApiController extends Controller
         }
         try {
             $user = PublicUser::create($user_data);
+            unset($user->password);
 
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
