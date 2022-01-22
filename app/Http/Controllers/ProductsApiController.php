@@ -8,6 +8,7 @@ use  Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
 use App\Http\Services\ImageService;
 use App\Http\Constants\StatusCodes;
+use Illuminate\Support\Facades\DB;
 use TCG\Voyager\Models\Category;
 use App\Http\Services\TranslationsHelper;
 
@@ -255,7 +256,7 @@ class ProductsApiController extends Controller
 
     public function relatedProducts(Request $request)
     {
-        if (empty($request->get('flavour_type')) || empty($request->get('language'))) {
+        if (empty($request->get('flavour_type')) || empty($request->get('language')) || empty($request->get('related_flavour_id'))) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[3],
                 'error_message' => $this->status_codes->postRequests()->{"406"}{'incorrect_Data'},
@@ -264,7 +265,9 @@ class ProductsApiController extends Controller
             return new JsonResponse($response);
         }
         $result = $this->translation_helper->languangeMapper($request->get('language'),
-            $this->flavours::where('flavour_type', $request->get('flavour_type'))->get(),
+            $this->flavours::where('flavour_type', $request->get('flavour_type'))
+                ->where('id', '!=', $request->get('related_flavour_id'))
+                ->orderBy(DB::raw('RAND()'))->get(),
             $request);
 
         if (empty($result)) {
@@ -281,6 +284,6 @@ class ProductsApiController extends Controller
             'data' => $result
         ];
 
-        return new JsonResponse($result);
+        return new JsonResponse($response);
     }
 }
