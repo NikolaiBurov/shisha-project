@@ -281,6 +281,6 @@ class ProductsApiController extends Controller
             'data' => $result
         ];
 
-        return new JsonResponse($result);
+        return new JsonResponse($response);
     }
 }
