@@ -17,4 +17,12 @@ class Flavour extends Model
    protected $casts = [
         'image_gallery' => 'collection',
     ];
+
+   /**
+     * Get all of the variations for the flavour.
+     */
+    public function variations()
+    {
+        return $this->hasMany(FlavourVariation::class, 'flavour_id');
+    }
 }

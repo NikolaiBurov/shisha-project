@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Flavour;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use  Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
@@ -218,36 +219,50 @@ class ProductsApiController extends Controller
         return new JsonResponse($response);
     }
 
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     * This method goes through the variations relation of flavours and filter them accoring to what
+     * is given from request
+     * @with  used to filter them - goes through flavour_Variations relation
+     * @wherehas is to include them in the object -  goes through flavour_Variations relation
+     * @where - filters flavours table
+     */
     public function filterFlavours(Request $request): JsonResponse
     {
-
-        $response = Flavour::query();
 
         $products_number = $request->filled('items_per_page') ? $request->get('items_per_page') : 6;
 
         $current_page = $request->filled('page') ? $request->get('page') : 1;
 
-        if ($request->filled('price_from')) {
-            $response = $response->where('price', '>=', $request->get('price_from'));
-        }
+        $flavours = $this->flavours::with(['variations' => function ($query) use ($request) {
 
-        if ($request->filled('price_to')) {
-            $response = $response->where('price', '<=', $request->get('price_to'));
-        }
+            if ($request->filled('price_from')) {
+                $query->where('price', '>', $request->get('price_from'));
+            }
+            if ($request->filled('price_to')) {
+                $query->where('price', '<=', $request->get('price_to'));
+            }
+            return $query;
+        }])
+            ->whereHas('variations', function ($query) use ($request) {
+                if ($request->filled('price_from')) {
+                    $query->where('price', '>', $request->get('price_from'));
+                }
+                if ($request->filled('price_to')) {
+                    $query->where('price', '<=', $request->get('price_to'));
+                }
+                return $query;
+            })
+            ->when($request->filled('in_stock'), function ($query) use ($request) {
+                $query->where('in_stock', '=', $request->get('in_stock'));
+            })
+            ->when($request->filled('category_id'), function ($query) use ($request) {
+                $query->whereIn('category_id', $request->get('category_id'));
+            })
+            ->paginate($products_number);
 
-        if ($request->filled('in_stock')) {
-            $response = $response->where('in_stock', '=', $request->get('in_stock'));
-        }
-
-        if ($request->filled('category_id') && !empty($request->get('category_id'))) {
-            $response = $response->whereIn('category_id', $request->get('category_id'));
-        }
-
-        $response = $response->orderBy('id', 'asc');
-
-        $paginated = $response->paginate($products_number);
-
-        $result = $this->translation_helper->paginatorHelper($paginated, $request->get('language'), $request, $this->status_codes, $current_page);
+         $result = $this->translation_helper->translateFilteredResults($flavours, $request->get('language'), $request, $this->status_codes, $current_page);
 
         return new JsonResponse($result);
 
