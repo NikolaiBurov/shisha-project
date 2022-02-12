@@ -25,10 +25,13 @@ class ProductsApiController extends Controller
 
         $current_page = $request->filled('page') ? $request->get('page') : 1;
 
+        $paginated = $this->flavours::with(['variations' => function ($query) use ($request) {}])
+            ->whereHas('variations', function ($query) use ($request) {})
+            ->where('in_stock',1)
+            ->orderBy('id','asc')
+            ->paginate($products_number);
 
-        $paginated = Flavour::query()->orderBy('id', 'asc')->paginate($products_number);
-
-        $result = $this->translation_helper->paginatorHelper($paginated, $request->get('language'), $request, $this->status_codes, $current_page);
+        $result = $this->translation_helper->translateFilteredResults($paginated, $request->get('language'), $request, $this->status_codes, $current_page);
 
         return new JsonResponse($result);
     }
@@ -260,6 +263,7 @@ class ProductsApiController extends Controller
             ->when($request->filled('category_id'), function ($query) use ($request) {
                 $query->whereIn('category_id', $request->get('category_id'));
             })
+            ->orderBy('id','ASC')
             ->paginate($products_number);
 
          $result = $this->translation_helper->translateFilteredResults($flavours, $request->get('language'), $request, $this->status_codes, $current_page);
