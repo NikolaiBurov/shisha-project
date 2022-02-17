@@ -16,22 +16,15 @@ use App\Http\Services\TranslationsHelper;
 class ProductsApiController extends Controller
 {
 
-
     public function getAllFlavours(Request $request): ?JsonResponse
     {
         $lang = $request->get('language');
 
-        $products_number = $request->filled('items_per_page') ? $request->get('items_per_page') : 6;
+        $request->items_per_page = $request->filled('items_per_page') ? $request->get('items_per_page') : 6;
 
         $current_page = $request->filled('page') ? $request->get('page') : 1;
 
-        $paginated = $this->flavours::with(['variations' => function ($query) use ($request) {
-        }])
-            ->whereHas('variations', function ($query) use ($request) {
-            })
-            ->where('in_stock', 1)
-            ->orderBy('id', 'asc')
-            ->paginate($products_number);
+        $paginated = $this->flavours->getFlavoursByRequest($request);
 
         $result = $this->translation_helper->translateFilteredResults($paginated, $request->get('language'), $request, $this->status_codes, $current_page);
 
@@ -236,39 +229,11 @@ class ProductsApiController extends Controller
     public function filterFlavours(Request $request): JsonResponse
     {
 
-        $products_number = $request->filled('items_per_page') ? $request->get('items_per_page') : 6;
+        $request->items_per_page = $request->filled('items_per_page') ? $request->get('items_per_page') : 6;
 
         $current_page = $request->filled('page') ? $request->get('page') : 1;
 
-        $flavours = $this->flavours::with(['variations' => function ($query) use ($request) {
-
-            if ($request->filled('price_from')) {
-                $query->where('price', '>', $request->get('price_from'));
-            }
-            if ($request->filled('price_to')) {
-                $query->where('price', '<=', $request->get('price_to'));
-            }
-            return $query;
-        }])
-            ->whereHas('variations', function ($query) use ($request) {
-                if ($request->filled('price_from')) {
-                    $query->where('price', '>', $request->get('price_from'));
-                }
-                if ($request->filled('price_to')) {
-                    $query->where('price', '<=', $request->get('price_to'));
-                }
-                return $query;
-            })
-            ->when($request->filled('in_stock'), function ($query) use ($request) {
-                $query->where('in_stock', '=', $request->get('in_stock'));
-            })
-            ->when(($request->filled('category_id') && !empty($request->get('category_id'))), function ($query) use ($request) {
-
-                $query->whereIn('category_id', $request->get('category_id'));
-
-            })
-            ->orderBy('id', 'ASC')
-            ->paginate($products_number);
+        $flavours = $this->flavours->getFlavoursByRequest($request);
 
         $result = $this->translation_helper->translateFilteredResults($flavours, $request->get('language'), $request, $this->status_codes, $current_page);
 
