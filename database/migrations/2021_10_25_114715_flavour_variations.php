@@ -18,8 +18,6 @@ class FlavourVariations extends Migration
             $table->string('weight');
             $table->double('price');
             $table->integer('flavour_id');
-            $table->string('created_at');
-            $table->string('updated_at');
             $table->timestamps();
         });
     }
