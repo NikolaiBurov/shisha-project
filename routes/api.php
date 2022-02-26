@@ -34,6 +34,7 @@ Route::middleware([EnsureTokenIsValid::class])->group(function () {
         Route::post('/login-user', [App\Http\Controllers\UsersApiController::class, 'loginUser']);
         Route::put('/update-user/{id}', [App\Http\Controllers\UsersApiController::class, 'updateUser']);
         Route::post('/get-user-by-email-or-username', [App\Http\Controllers\UsersApiController::class, 'getUserByEmailOrUsername']);
+        Route::post('/get-user-by-email-token', [App\Http\Controllers\UsersApiController::class, 'getUserByEmailToken']);
     });
 
 //Cart Endpoints

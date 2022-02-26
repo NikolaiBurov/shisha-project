@@ -10,6 +10,8 @@ use App\Http\Services\ImageService;
 use App\Http\Services\ErrorService;
 use App\Http\Constants\StatusCodes;
 use App\Models\PublicUser;
+use Illuminate\Support\Js;
+use Psy\Util\Json;
 use Validator;
 use Illuminate\Support\Facades\Hash;
 
@@ -150,13 +152,14 @@ class UsersApiController extends Controller
 
     }
 
+
     /**
      * @param Request $request
      * @return JsonResponse
      */
     public function registerUser(Request $request): JsonResponse
     {
-        $this->setFields(['username', 'first_name', 'last_name', 'password', 'email', 'city', 'address', 'created_at']);
+        $this->setFields(['username', 'first_name', 'last_name', 'password', 'email_token', 'email', 'city', 'address', 'created_at']);
 
         $user_data = $request->get('user_data');
 
@@ -310,4 +313,35 @@ class UsersApiController extends Controller
 
         return new JsonResponse($response);
     }
+
+    public function getUserByEmailToken(Request $request): JsonResponse
+    {
+        if (!$request->get('email_token')) {
+            $response = [
+                'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[4],
+                'error_message' => $this->status_codes->postRequests()->{"200"}{'non_existent_user_email'},
+                'data' => null
+            ];
+            return new JsonResponse($response);
+        }
+        $user = $this->users::where('email_token', $request->get('email_token'));
+
+        if ($user->exists()) {
+            $response = [
+                'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
+                'error_message' => null,
+                'data' => $user->get()->makeHidden(['password', 'salt'])
+            ];
+            return new JsonResponse($response);
+        }
+
+        $response = [
+            'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[4],
+            'error_message' => $this->status_codes->postRequests()->{"200"}{'non_existent_user_email_token'},
+            'data' => null
+        ];
+        return new JsonResponse($response);
+    }
+
+
 }
