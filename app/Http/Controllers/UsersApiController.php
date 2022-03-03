@@ -331,7 +331,7 @@ class UsersApiController extends Controller
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
                 'error_message' => null,
-                'data' => $user->get()->makeHidden(['password', 'salt'])
+                'data' => $user->first()->makeHidden(['password', 'salt'])->toArray()
             ];
             return new JsonResponse($response);
         }
