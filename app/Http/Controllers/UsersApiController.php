@@ -320,7 +320,7 @@ class UsersApiController extends Controller
         if (!$request->get('email_token')) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[4],
-                'error_message' => $this->status_codes->postRequests()->{"200"}{'non_existent_user_email'},
+                'error_message' => $this->status_codes->postRequests()->{"200"}{'non_existent_user_email_token'},
                 'data' => null
             ];
             return new JsonResponse($response);
