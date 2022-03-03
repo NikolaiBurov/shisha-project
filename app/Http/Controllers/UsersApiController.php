@@ -217,7 +217,7 @@ class UsersApiController extends Controller
         return new JsonResponse($response);
     }
 
-    public function updateUser(Request $request, $id): JsonResponse
+    public function updateUser(Request $request): JsonResponse
     {
         $user_data = $request->get('user_data');
 
@@ -229,6 +229,8 @@ class UsersApiController extends Controller
             ];
             return new JsonResponse($response);
         }
+        $id = $user_data['id'];
+
         $loaded_user = $this->users::find($id);
 
         if (!isset($loaded_user)) {
