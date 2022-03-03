@@ -180,7 +180,7 @@ class UsersApiController extends Controller
             $new_fields[$a] = 'present';
         });
 
-        $validate_fields = array_merge($new_fields, ['email' => 'unique:public_users|required']);
+        $validate_fields = array_merge($new_fields, ['email' => 'unique:public_users|required', 'username' => 'unique:public_users|required']);
 
 
         $validator = Validator::make($user_data, $validate_fields);
@@ -240,7 +240,8 @@ class UsersApiController extends Controller
             return new JsonResponse($response);
         }
 
-        $validator = Validator::make($user_data, ['email' => "unique:public_users,email,{$id}"]);
+        $validator = Validator::make($user_data, ['email' => "unique:public_users,email,{$id}",
+                                                  'username' => "unique:public_users,username,{$id}"]);
 
         if ($validator->errors()->any()) {
             $response = [
