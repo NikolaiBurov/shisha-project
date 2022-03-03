@@ -2,6 +2,18 @@
 
 return [
 
+    /** @lang JWT_KEY */
+    'JWT_KEY' =>  'OSPvaJsWFZ2lXHJl12Hvi6sVUuPo403wjoR6Soaay2OfVCHrscfPmj1Jz8PW87B0',
+
+
+
+    /** @lang JWT_PAYLOAD */
+    'JWT_PAYLOAD' => [
+        "iss" => "CHANGEME",
+        "aud" => "CHANGEME",
+    ],
+
+
     /*
     |--------------------------------------------------------------------------
     | Application Name

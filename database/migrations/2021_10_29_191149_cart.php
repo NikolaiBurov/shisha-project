@@ -15,9 +15,9 @@ class Cart extends Migration
     {
         Schema::create('carts', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('user_id');
-            $table->foreign('flavour_variation_id')->references('id')->on('flavour_variations');
-            $table->foreign('flavour_id')->references('id')->on('flavours');
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('flavour_variation_id');
+            $table->unsignedBigInteger('flavour_id');
             $table->integer('quantity');
             $table->timestamps();
         });

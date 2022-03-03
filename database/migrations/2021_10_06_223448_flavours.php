@@ -19,10 +19,9 @@ class Flavours extends Migration
             $table->string('description');
             $table->string('short_description');
             $table->string('image');
-            $table->string('created_at');
-            $table->string('updated_at');
             $table->integer('category_id');
             $table->tinyInteger('in_stock');
+
             $table->timestamps();
         });
     }

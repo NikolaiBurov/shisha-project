@@ -3,46 +3,30 @@
 namespace App\Http\Controllers;
 
 use App\Models\Flavour;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use  Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
 use App\Http\Services\ImageService;
 use App\Http\Constants\StatusCodes;
+use Illuminate\Support\Facades\DB;
 use TCG\Voyager\Models\Category;
 use App\Http\Services\TranslationsHelper;
 
 class ProductsApiController extends Controller
 {
 
-    /**
-     * @var StatusCodes
-     */
-    private $status_codes;
-
-
-    /**
-     * @var TranslationsHelper
-     */
-    private $translation_helper;
-
-    public function __construct(TranslationsHelper $translationsHelper)
-    {
-        $this->translation_helper = $translationsHelper;
-        $this->status_codes = (new StatusCodes());
-    }
-
     public function getAllFlavours(Request $request): ?JsonResponse
     {
         $lang = $request->get('language');
 
-        $products_number =  $request->filled('items_per_page') ? $request->get('items_per_page') : 6;
+        $request->items_per_page = $request->filled('items_per_page') ? $request->get('items_per_page') : 6;
 
-        $current_page  = $request->filled('page') ? $request->get('page') : 1;
+        $current_page = $request->filled('page') ? $request->get('page') : 1;
 
+        $paginated = $this->flavours->getFlavoursByRequest($request);
 
-        $paginated = Flavour::query()->orderBy('id','asc')->paginate($products_number);
-
-        $result = $this->translation_helper->paginatorHelper($paginated,$request->get('language'),$request,$this->status_codes,$current_page);
+        $result = $this->translation_helper->translateFilteredResults($paginated, $request->get('language'), $request, $this->status_codes, $current_page);
 
         return new JsonResponse($result);
     }
@@ -233,39 +217,61 @@ class ProductsApiController extends Controller
         return new JsonResponse($response);
     }
 
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     * This method goes through the variations relation of flavours and filter them accoring to what
+     * is given from request
+     * @with  used to filter them - goes through flavour_Variations relation
+     * @wherehas is to include them in the object -  goes through flavour_Variations relation
+     * @where - filters flavours table
+     */
     public function filterFlavours(Request $request): JsonResponse
     {
 
-        $response = Flavour::query();
+        $request->items_per_page = $request->filled('items_per_page') ? $request->get('items_per_page') : 6;
 
-        $products_number =  $request->filled('items_per_page') ? $request->get('items_per_page') : 6;
+        $current_page = $request->filled('page') ? $request->get('page') : 1;
 
-        $current_page  = $request->filled('page') ? $request->get('page') : 1;
+        $flavours = $this->flavours->getFlavoursByRequest($request);
 
-        if ($request->filled('price_from')) {
-            $response = $response->where('price', '>=', $request->get('price_from'));
+        $result = $this->translation_helper->translateFilteredResults($flavours, $request->get('language'), $request, $this->status_codes, $current_page);
+
+        return new JsonResponse($result);
+
+
+    }
+
+    public function relatedProducts(Request $request)
+    {
+        if (empty($request->get('flavour_type')) || empty($request->get('language')) || empty($request->get('related_flavour_id'))) {
+            $response = [
+                'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[3],
+                'error_message' => $this->status_codes->postRequests()->{"406"}{'incorrect_Data'},
+                'data' => null
+            ];
+            return new JsonResponse($response);
         }
+        $result = $this->translation_helper->languangeMapper($request->get('language'),
+            $this->flavours::where('flavour_type', $request->get('flavour_type'))
+                ->where('id', '!=', $request->get('related_flavour_id'))
+                ->orderBy(DB::raw('RAND()'))->get(),
+            $request);
 
-        if ($request->filled('price_to')) {
-            $response = $response->where('price', '<=', $request->get('price_to'));
+        if (empty($result)) {
+            $response = [
+                'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[1],
+                'error_message' => $this->status_codes->postRequests()->{"200"}{'no_products'},
+                'data' => null
+            ];
+            return new JsonResponse($response);
         }
+        $response = [
+            'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
+            'error_message' => null,
+            'data' => $result
+        ];
 
-        if ($request->filled('in_stock')) {
-            $response = $response->where('in_stock', '=', $request->get('in_stock'));
-        }
-
-        if ($request->filled('category_id') && !empty($request->get('category_id'))) {
-            $response = $response->whereIn('category_id', $request->get('category_id'));
-        }
-
-        $response = $response->orderBy('id', 'asc');
-
-        $paginated = $response->paginate($products_number);
-
-        $result = $this->translation_helper->paginatorHelper($paginated,$request->get('language'),$request,$this->status_codes,$current_page);
-
-        return new JsonResponse( $result);
-
-
+        return new JsonResponse($response);
     }
 }

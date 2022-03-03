@@ -6,14 +6,16 @@ use Illuminate\Http\Request;
 
 class ImageService
 {
-    /**
-     * @var
-     */
-    private $images_path;
 
-    public function __construct($images_path)
+    public function transformFromCollection($obj, Request $request)
     {
-        $this->images_path = $images_path;
+        $path = $request->getSchemeAndHttpHost();
+
+        foreach ($obj as $index => $item) {
+            $obj[$index]['image'] = $path . '/storage/' . $item['image'];
+
+        }
+        return $obj;
     }
 
     /**
@@ -38,8 +40,8 @@ class ImageService
         $path = $request->getSchemeAndHttpHost();
         $result = [];
 
-        foreach (explode(",",str_replace(['"',"[","]",'\\'],"",$data))  as $index => $item) {
-            $result[] = $path .'/storage/'. $item;
+        foreach (explode(",", str_replace(['"', "[", "]", '\\'], "", $data)) as $index => $item) {
+            $result[] = $path . '/storage/' . $item;
         }
 
         return $result;

@@ -7,6 +7,7 @@ use App\Http\Constants\StatusCodes;
 use App\Http\Services\ImageService;
 use Illuminate\Http\Request;
 use App\Models\FlavourVariation;
+use Illuminate\Support\Arr;
 
 
 class TranslationsHelper
@@ -38,8 +39,7 @@ class TranslationsHelper
 
                 $entities[$data->id]['image'] = ImageService::absolutePath($entities[$data->id]['image'], $request);
 
-
-                if (!is_null($data->image_gallery)) {
+                if (!is_null($data->image_gallery) && !$data->image_gallery->isEmpty()) {
                     $entities[$data->id]['image_gallery'] = ImageService::multipleImagesAbsolutePath($entities[$data->id]['image_gallery'], $request);
                 }
             }
@@ -50,6 +50,70 @@ class TranslationsHelper
 
     }
 
+    /**
+     * @param $filters
+     * @param $language
+     * @param Request $request
+     * @param StatusCodes $statusCodes
+     * @param $current_page
+     * @return array
+     */
+    public function translateFilteredResults($filters, $language, Request $request, StatusCodes $statusCodes, $current_page)
+    {
+
+        ///fix this method to separate results and pagiante them
+        foreach ($filters as $index => $fitler) {
+            $filters[$index]['title'] = $fitler->getTranslatedAttribute('title', $language, 'bg');
+            $filters[$index]['description'] = $fitler->getTranslatedAttribute('description', $language, 'bg');
+            $filters[$index]['short_description'] = $fitler->getTranslatedAttribute('short_description', $language, 'bg');
+            $filters[$index]['image'] = ImageService::absolutePath($filters[$index]['image'], $request);
+        }
+
+        $result = $this->paginateFilters($filters, $current_page, $statusCodes);
+
+        return $result;
+    }
+
+    /**
+     * @param $filters
+     * @param $current_page
+     * @param StatusCodes $statusCodes
+     * @return array
+     */
+    public function paginateFilters($filters, $current_page, StatusCodes $statusCodes)
+    {
+        $paginatior = new \stdClass();
+        $flavours = [];
+
+        $itemsTransformedAndPaginated = new \Illuminate\Pagination\LengthAwarePaginator(
+            $filters,
+            $filters->total(),
+            $filters->perPage(),
+            $current_page, [
+                'path' => \Request::url(),
+                'query' => [
+                    'page' => $filters->currentPage()
+                ]
+            ]
+        );
+        foreach ($itemsTransformedAndPaginated['data'] as $index => $datum) {
+            unset($datum['image_gallery']);
+            if(isset($datum['translations']))
+                unset($datum['translations']);
+            $flavours[] = $datum;
+        }
+        $status_code = empty($flavours)
+            ? array_keys(get_object_vars($statusCodes->postRequests()))[4]
+            : array_keys(get_object_vars($statusCodes->postRequests()))[0];
+
+        $paginatior->on_first_page = $itemsTransformedAndPaginated->onFirstPage();
+        $paginatior->last_page = $itemsTransformedAndPaginated->lastPage();
+        $paginatior->total_products = $itemsTransformedAndPaginated->total();
+        $paginatior->current_page = $itemsTransformedAndPaginated->currentPage();
+        $paginatior->per_page = $itemsTransformedAndPaginated->perPage();
+
+        return ['paginator' => $paginatior, 'data' => $flavours, 'status_code' => $status_code];
+    }
 
     /**
      * @param $data

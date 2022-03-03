@@ -30,6 +30,8 @@ class StatusCodes
                 'wrong_variation' => 'Given variation id  is not matching given flavour',
                 'cart_exists' => 'Cart does not exists',
                 'cart_entity_deleted' =>  isset($data) ? "Cart record with id {$data->id}  was deleted" : "",
+                'no_products' => 'No products were found',
+                'non_existent_user_email_token' => 'User with such email token doesnt exist',
             ],
             '404' => 'NotFound',
             '400' => 'Bad request',

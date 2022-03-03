@@ -10,22 +10,15 @@ use App\Http\Services\ImageService;
 use App\Http\Services\ErrorService;
 use App\Http\Constants\StatusCodes;
 use App\Models\PublicUser;
+use Illuminate\Support\Js;
+use Psy\Util\Json;
 use Validator;
 use Illuminate\Support\Facades\Hash;
 
-class UsersApiController
+class UsersApiController extends Controller
 {
-    private $users;
-    private $status_codes = [];
-    private $error_service;
     private $fields = [];
 
-    public function __construct(PublicUser $users, StatusCodes $status_codes, ErrorService $errorService)
-    {
-        $this->users = $users;
-        $this->status_codes = $status_codes;
-        $this->error_service = $errorService;
-    }
 
     /**
      * @return array
@@ -112,7 +105,7 @@ class UsersApiController
 
         $password = $request->get('password');
 
-        if (empty($field) || empty($password) ) {
+        if (empty($field) || empty($password)) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[3],
                 'error_message' => $this->status_codes->postRequests()->{"406"}{'incorrect_Data'},
@@ -123,10 +116,11 @@ class UsersApiController
 
         $query = $this->users::query();
 
-        if(filter_var($field, FILTER_VALIDATE_EMAIL))
+        if (filter_var($field, FILTER_VALIDATE_EMAIL)) {
             $query = $query->where('email', $field);
-        else
+        } else {
             $query = $query->where('username', $field);
+        }
 
         $loaded_user = $query->first();
 
@@ -138,6 +132,7 @@ class UsersApiController
             ];
             return new JsonResponse($response);
         }
+        $loaded_user->makeHidden(['password']);
 
         if ($loaded_user->password === $password) {
             $response = [
@@ -157,13 +152,14 @@ class UsersApiController
 
     }
 
+
     /**
      * @param Request $request
      * @return JsonResponse
      */
     public function registerUser(Request $request): JsonResponse
     {
-        $this->setFields(['username', 'first_name', 'last_name', 'password', 'email', 'city', 'address', 'created_at']);
+        $this->setFields(['username', 'first_name', 'last_name', 'password', 'email_token', 'email', 'city', 'address', 'created_at']);
 
         $user_data = $request->get('user_data');
 
@@ -184,7 +180,7 @@ class UsersApiController
             $new_fields[$a] = 'present';
         });
 
-        $validate_fields = array_merge($new_fields, ['email' => 'unique:public_users|required']);
+        $validate_fields = array_merge($new_fields, ['email' => 'unique:public_users|required', 'username' => 'unique:public_users|required']);
 
 
         $validator = Validator::make($user_data, $validate_fields);
@@ -200,6 +196,7 @@ class UsersApiController
         }
         try {
             $user = PublicUser::create($user_data);
+            unset($user->password);
 
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
@@ -243,7 +240,8 @@ class UsersApiController
             return new JsonResponse($response);
         }
 
-        $validator = Validator::make($user_data, ['email' => "unique:public_users,email,{$id}"]);
+        $validator = Validator::make($user_data, ['email' => "unique:public_users,email,{$id}",
+                                                  'username' => "unique:public_users,username,{$id}"]);
 
         if ($validator->errors()->any()) {
             $response = [
@@ -290,7 +288,7 @@ class UsersApiController
         }
         $query = $this->users::query();
 
-        if(filter_var($field, FILTER_VALIDATE_EMAIL))
+        if (filter_var($field, FILTER_VALIDATE_EMAIL))
             $query = $query->where('email', $field);
         else
             $query = $query->where('username', $field);
@@ -309,11 +307,42 @@ class UsersApiController
         unset($loaded_user->password);
 
         $response = [
-            'status_code' =>  array_keys(get_object_vars($this->status_codes->postRequests()))[0],
+            'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
             'data' => $loaded_user,
             'error_message' => null
         ];
 
         return new JsonResponse($response);
     }
+
+    public function getUserByEmailToken(Request $request): JsonResponse
+    {
+        if (!$request->get('email_token')) {
+            $response = [
+                'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[4],
+                'error_message' => $this->status_codes->postRequests()->{"200"}{'non_existent_user_email_token'},
+                'data' => null
+            ];
+            return new JsonResponse($response);
+        }
+        $user = $this->users::where('email_token', $request->get('email_token'));
+
+        if ($user->exists()) {
+            $response = [
+                'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
+                'error_message' => null,
+                'data' => $user->get()->makeHidden(['password', 'salt'])
+            ];
+            return new JsonResponse($response);
+        }
+
+        $response = [
+            'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[4],
+            'error_message' => $this->status_codes->postRequests()->{"200"}{'non_existent_user_email_token'},
+            'data' => null
+        ];
+        return new JsonResponse($response);
+    }
+
+
 }

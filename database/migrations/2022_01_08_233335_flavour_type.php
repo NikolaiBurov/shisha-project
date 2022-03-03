@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class FlavourVariations extends Migration
+class FlavourType extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,8 @@ class FlavourVariations extends Migration
      */
     public function up()
     {
-        Schema::create('flavour_variations', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('weight');
-            $table->double('price');
-            $table->integer('flavour_id');
-            $table->timestamps();
+        Schema::table('flavours', function ($table) {
+            $table->string('flavour_type');
         });
     }
 
@@ -29,6 +25,8 @@ class FlavourVariations extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('flavour_variations');
+        Schema::table('flavours', function ($table) {
+            $table->dropColumn('flavour_type');
+        });
     }
 }
