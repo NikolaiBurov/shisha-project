@@ -159,7 +159,7 @@ class UsersApiController extends Controller
      */
     public function registerUser(Request $request): JsonResponse
     {
-        $this->setFields(['username', 'first_name', 'last_name', 'password', 'email_token', 'email', 'city', 'address', 'created_at']);
+        $this->setFields(['username', 'first_name', 'last_name', 'password', 'email_token', 'email', 'password_reset_token', 'city', 'address', 'created_at']);
 
         $user_data = $request->get('user_data');
 
