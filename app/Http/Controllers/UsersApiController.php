@@ -52,7 +52,7 @@ class UsersApiController extends Controller
         }
         $response = [
             'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[1],
-            'error_message' => $this->status_codes->postRequests()->{"200"}{'empty_users'},
+            'error_message' => $this->status_codes->postRequests()->{"200"}['empty_users'],
             'data' => null
         ];
         return new JsonResponse($response);
@@ -69,7 +69,7 @@ class UsersApiController extends Controller
         if (empty($user_id)) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[3],
-                'error_message' => $this->status_codes->postRequests()->{"406"}{'incorrect_Data'},
+                'error_message' => $this->status_codes->postRequests()->{"406"}['incorrect_Data'],
                 'data' => null
             ];
             return new JsonResponse($response);
@@ -80,7 +80,7 @@ class UsersApiController extends Controller
         if (is_null($user)) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[4],
-                'error_message' => $this->status_codes->postRequests(['id' => $user_id])->{"200"}{'non_existent_user_id'},
+                'error_message' => $this->status_codes->postRequests(['id' => $user_id])->{"200"}['non_existent_user_id'],
                 'data' => null
             ];
             return new JsonResponse($response);
@@ -108,7 +108,7 @@ class UsersApiController extends Controller
         if (empty($field) || empty($password)) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[3],
-                'error_message' => $this->status_codes->postRequests()->{"406"}{'incorrect_Data'},
+                'error_message' => $this->status_codes->postRequests()->{"406"}['incorrect_Data'],
                 'data' => null
             ];
             return new JsonResponse($response);
@@ -127,7 +127,7 @@ class UsersApiController extends Controller
         if (empty($loaded_user)) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[4],
-                'error_message' => $this->status_codes->postRequests()->{"200"}{'non_existent_user'},
+                'error_message' => $this->status_codes->postRequests()->{"200"}['non_existent_user'],
                 'data' => null
             ];
             return new JsonResponse($response);
@@ -144,7 +144,7 @@ class UsersApiController extends Controller
         } else {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[1],
-                'error_message' => $this->status_codes->postRequests()->{"200"}{'incorrect_password'},
+                'error_message' => $this->status_codes->postRequests()->{"200"}['incorrect_password'],
                 'data' => null
             ];
             return new JsonResponse($response);
@@ -166,7 +166,7 @@ class UsersApiController extends Controller
         if (empty($user_data)) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[3],
-                'error_message' => $this->status_codes->postRequests()->{"406"}{'incorrect_Data'},
+                'error_message' => $this->status_codes->postRequests()->{"406"}['incorrect_Data'],
                 'data' => null
             ];
             return new JsonResponse($response);
@@ -224,7 +224,7 @@ class UsersApiController extends Controller
         if (empty($user_data)) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[3],
-                'error_message' => $this->status_codes->postRequests()->{"406"}{'incorrect_Data'},
+                'error_message' => $this->status_codes->postRequests()->{"406"}['incorrect_Data'],
                 'data' => null
             ];
             return new JsonResponse($response);
@@ -236,7 +236,7 @@ class UsersApiController extends Controller
         if (!isset($loaded_user)) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[2],
-                'error_message' => $this->status_codes->postRequests(['id' => $id])->{"200"}{'non_existent_user_id'},
+                'error_message' => $this->status_codes->postRequests(['id' => $id])->{"200"}['non_existent_user_id'],
                 'data' => null
             ];
             return new JsonResponse($response);
@@ -258,7 +258,7 @@ class UsersApiController extends Controller
         if (!$loaded_user->update($user_data)) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[2],
-                'error_message' => $this->status_codes->postRequests()->{"200"}{'update_failed'},
+                'error_message' => $this->status_codes->postRequests()->{"200"}['update_failed'],
                 'data' => null
             ];
             return new JsonResponse($response);
@@ -266,7 +266,7 @@ class UsersApiController extends Controller
 
         $response = [
             'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
-            'data' => $this->status_codes->postRequests()->{"200"}{'success_update'},
+            'data' => $this->status_codes->postRequests()->{"200"}['success_update'],
             'error_message' => null
         ];
 
@@ -283,7 +283,7 @@ class UsersApiController extends Controller
         if (empty($field)) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[3],
-                'error_message' => $this->status_codes->postRequests()->{"406"}{'incorrect_Data'},
+                'error_message' => $this->status_codes->postRequests()->{"406"}['incorrect_Data'],
                 'data' => null
             ];
             return new JsonResponse($response);
@@ -300,7 +300,7 @@ class UsersApiController extends Controller
         if (empty($loaded_user)) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[4],
-                'error_message' => $this->status_codes->postRequests()->{"200"}{'non_existent_user_email'},
+                'error_message' => $this->status_codes->postRequests()->{"200"}['non_existent_user_email'],
                 'data' => null
             ];
             return new JsonResponse($response);
@@ -322,7 +322,7 @@ class UsersApiController extends Controller
         if (!$request->get('email_token')) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[4],
-                'error_message' => $this->status_codes->postRequests()->{"200"}{'non_existent_user_email_token'},
+                'error_message' => $this->status_codes->postRequests()->{"200"}['non_existent_user_email_token'],
                 'data' => null
             ];
             return new JsonResponse($response);
@@ -340,7 +340,7 @@ class UsersApiController extends Controller
 
         $response = [
             'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[4],
-            'error_message' => $this->status_codes->postRequests()->{"200"}{'non_existent_user_email_token'},
+            'error_message' => $this->status_codes->postRequests()->{"200"}['non_existent_user_email_token'],
             'data' => null
         ];
         return new JsonResponse($response);

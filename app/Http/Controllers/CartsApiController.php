@@ -62,13 +62,13 @@ class CartsApiController extends Controller
         if (empty($cart)) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[1],
-                'error_message' => $this->status_codes->postRequests()->{"200"}{'empty_cart'},
+                'error_message' => $this->status_codes->postRequests()->{"200"}['empty_cart'],
                 'data' => null
             ];
             return new JsonResponse($response);
         }
 
-        $mapped_flavours = $this->cart_helper->mapProducts($cart,$request);
+        $mapped_flavours = $this->cart_helper->mapProducts($cart, $request);
 
         $response = [
             'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
@@ -104,7 +104,7 @@ class CartsApiController extends Controller
         if (!$this->users::where('id', $data['user_id'])->exists()) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[1],
-                'error_message' => $this->status_codes->postRequests()->{"200"}{'user_not_exists'},
+                'error_message' => $this->status_codes->postRequests()->{"200"}['user_not_exists'],
                 'data' => null
             ];
 
@@ -114,7 +114,7 @@ class CartsApiController extends Controller
         if (!$this->flavours::where('id', $data['flavour_id'])->exists()) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[1],
-                'error_message' => $this->status_codes->postRequests()->{"200"}{'flavour_not_exists'},
+                'error_message' => $this->status_codes->postRequests()->{"200"}['flavour_not_exists'],
                 'data' => null
             ];
 
@@ -124,7 +124,7 @@ class CartsApiController extends Controller
         if (!$this->flavour_variations::where('id', $data['flavour_variation_id'])->exists()) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[1],
-                'error_message' => $this->status_codes->postRequests()->{"200"}{'flavour_variation_exists'},
+                'error_message' => $this->status_codes->postRequests()->{"200"}['flavour_variation_exists'],
                 'data' => null
             ];
 
@@ -137,7 +137,7 @@ class CartsApiController extends Controller
 
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[1],
-                'error_message' => $this->status_codes->postRequests()->{"200"}{'wrong_variation'},
+                'error_message' => $this->status_codes->postRequests()->{"200"}['wrong_variation'],
                 'data' => null
             ];
 
@@ -208,7 +208,7 @@ class CartsApiController extends Controller
         if (!$this->users::where('id', $data['user_id'])->exists()) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[1],
-                'error_message' => $this->status_codes->postRequests()->{"200"}{'user_not_exists'},
+                'error_message' => $this->status_codes->postRequests()->{"200"}['user_not_exists'],
                 'data' => null
             ];
 
@@ -218,7 +218,7 @@ class CartsApiController extends Controller
         if (!$this->flavours::where('id', $data['flavour_id'])->exists()) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[1],
-                'error_message' => $this->status_codes->postRequests()->{"200"}{'flavour_not_exists'},
+                'error_message' => $this->status_codes->postRequests()->{"200"}['flavour_not_exists'],
                 'data' => null
             ];
 
@@ -228,7 +228,7 @@ class CartsApiController extends Controller
         if (!$this->flavour_variations::where('id', $data['flavour_variation_id'])->exists()) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[1],
-                'error_message' => $this->status_codes->postRequests()->{"200"}{'flavour_variation_exists'},
+                'error_message' => $this->status_codes->postRequests()->{"200"}['flavour_variation_exists'],
                 'data' => null
             ];
 
@@ -243,9 +243,9 @@ class CartsApiController extends Controller
             $cart_update = Cart::find($cart[0]['id']);
             if ($cart_update->quantity >= 1) {
                 $cart_update->quantity = $cart_update->quantity -= $data['quantity_remove'];
-                if ($cart_update->quantity == 0) {
+                if ($cart_update->quantity <= 0) {
                     Cart::destroy([$cart_update->id]);
-                    $response['data'] = $this->status_codes->postRequests($cart_update)->{"200"}{'cart_entity_deleted'};
+                    $response['data'] = $this->status_codes->postRequests(['id' => $cart_update->id])->{"200"}['cart_entity_deleted'];
                 } else {
                     $cart_update->save();
                     $response['data'] = $cart_update;
@@ -255,7 +255,7 @@ class CartsApiController extends Controller
         } else {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[1],
-                'error_message' => $this->status_codes->postRequests()->{"200"}{'cart_exists'},
+                'error_message' => $this->status_codes->postRequests()->{"200"}['cart_exists'],
                 'data' => null
             ];
         }
