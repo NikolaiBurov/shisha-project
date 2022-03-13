@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\VoyagerLabelsController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -30,4 +31,7 @@ Route::get('/', [App\Http\Controllers\HomeController::class, 'forbidden'])->name
 
 Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();
+    Route::get('/labels', [VoyagerLabelsController::class, 'index'])->name('voyager_labels')->middleware('labels');;
+    Route::post('/labels-edit', [VoyagerLabelsController::class, 'editLabel'])->name('voyager_labels_edit');
+
 });
