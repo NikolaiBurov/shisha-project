@@ -47,7 +47,7 @@ class ProductsApiController extends Controller
         if (empty($category_id)) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[3],
-                'error_message' => $this->status_codes->postRequests()->{"406"}{'incorrect_Data'},
+                'error_message' => $this->status_codes->postRequests()->{"406"}['incorrect_Data'],
                 'data' => null
             ];
             return new JsonResponse($response);
@@ -64,7 +64,7 @@ class ProductsApiController extends Controller
         if (is_null($products)) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[1],
-                'error_message' => $this->status_codes->postRequests()->{"200"}{'empty_flavours'},
+                'error_message' => $this->status_codes->postRequests()->{"200"}['empty_flavours'],
                 'data' => null
             ];
             return new JsonResponse($response);
@@ -94,7 +94,7 @@ class ProductsApiController extends Controller
         if (empty($flavour_id)) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[3],
-                'error_message' => $this->status_codes->postRequests()->{"406"}{'incorrect_Data'},
+                'error_message' => $this->status_codes->postRequests()->{"406"}['incorrect_Data'],
                 'data' => null
             ];
             return new JsonResponse($response);
@@ -109,7 +109,7 @@ class ProductsApiController extends Controller
         if (is_null($product)) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[1],
-                'error_message' => $this->status_codes->postRequests()->{"200"}{'non_existent_product'},
+                'error_message' => $this->status_codes->postRequests()->{"200"}['non_existent_product'],
                 'data' => null
             ];
             return new JsonResponse($response);
@@ -134,7 +134,7 @@ class ProductsApiController extends Controller
         if (empty($categories)) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
-                'error_message' => $this->status_codes->postRequests()->{"200"}{'empty_categories'},
+                'error_message' => $this->status_codes->postRequests()->{"200"}['empty_categories'],
                 'data' => null
             ];
             return new JsonResponse($response);
@@ -169,7 +169,7 @@ class ProductsApiController extends Controller
         if (empty($flavour_ids)) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[3],
-                'error_message' => $this->status_codes->postRequests()->{"406"}{'incorrect_Data'},
+                'error_message' => $this->status_codes->postRequests()->{"406"}['incorrect_Data'],
                 'data' => null
             ];
             return new JsonResponse($response);
@@ -177,7 +177,7 @@ class ProductsApiController extends Controller
         if (!is_array($flavour_ids)) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
-                'error_message' => $this->status_codes->postRequests()->{"200"}{'wrong_data_type'},
+                'error_message' => $this->status_codes->postRequests()->{"200"}['wrong_data_type'],
                 'data' => null
             ];
             return new JsonResponse($response);
@@ -192,7 +192,7 @@ class ProductsApiController extends Controller
         if (is_null($flavours)) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
-                'error_message' => $this->status_codes->postRequests()->{"200"}{'product_list_empty'},
+                'error_message' => $this->status_codes->postRequests()->{"200"}['product_list_empty'],
                 'data' => null
             ];
             return new JsonResponse($response);
@@ -247,7 +247,7 @@ class ProductsApiController extends Controller
         if (empty($request->get('flavour_type')) || empty($request->get('language')) || empty($request->get('related_flavour_id'))) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[3],
-                'error_message' => $this->status_codes->postRequests()->{"406"}{'incorrect_Data'},
+                'error_message' => $this->status_codes->postRequests()->{"406"}['incorrect_Data'],
                 'data' => null
             ];
             return new JsonResponse($response);
@@ -261,7 +261,7 @@ class ProductsApiController extends Controller
         if (empty($result)) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[1],
-                'error_message' => $this->status_codes->postRequests()->{"200"}{'no_products'},
+                'error_message' => $this->status_codes->postRequests()->{"200"}['no_products'],
                 'data' => null
             ];
             return new JsonResponse($response);
