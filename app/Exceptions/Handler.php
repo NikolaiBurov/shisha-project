@@ -33,8 +33,33 @@ class Handler extends ExceptionHandler
      */
     public function register()
     {
+        $this->renderable(function (\Throwable $e, $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'message' => 'Verification Failed'
+                ], 404);
+            }
+        });
+
         $this->reportable(function (Throwable $e) {
             //
         });
     }
+
+    public function render($request, $e)
+    {
+        if ($this->isHttpException($e)) {
+
+            $statusCode = $e->getStatusCode();
+
+            return response()->make(view('partials/404_page'),$statusCode);
+
+//            return match ($statusCode) {
+//                404 => response()->make(view('partials/404_page'),$statusCode),
+//                default =>  response()->make(view('partials/404_page'),$statusCode)
+//            };
+        }
+        return parent::render($request, $e);
+    }
+
 }
