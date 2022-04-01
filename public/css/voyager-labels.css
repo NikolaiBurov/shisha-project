@@ -1,1 +1,34 @@
-/*style here*/
+.labels-container {
+    background-color: #fff;
+    margin-left: 15px;
+    padding: 0 30px 10px;
+}
+
+.labels-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.labels-title {
+    color: #555;
+    font-size: 18px;
+    line-height: 43px;
+    font-weight: bold;
+}
+
+.labels-input {
+    border: 1px solid #e4eaec;
+    border-radius: 3px;
+    margin-bottom: 15px;
+    padding: 6px;
+}
+
+.labels-button {
+    color: #fff;
+    background-color: #22a7f0;
+    border-radius: 3px;
+    border: none;
+    font-style: 14px;
+    opacity: 0.9;
+    padding: 6px 15px;
+}
