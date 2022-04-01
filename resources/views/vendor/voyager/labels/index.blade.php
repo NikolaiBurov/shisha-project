@@ -10,9 +10,10 @@
                 <div class="labels-wrapper">
                     @if(is_array($value))
                         @foreach($value as $nested_key => $nested_value)
+
                             <label for="{{$key}}[{{$nested_key}}]{{$nested_value}}">{{$nested_key}}</label>
                             <input type="hidden" name="{{$key}}[{{$nested_key}}]" placeholder="{{$nested_key}}">
-                            <input class="labels-input" type="text" name="{{$key}}[{{$nested_key}}]{{$nested_value}}" placeholder="{{$nested_value}}">
+                            <input class="labels-input" type="text" name="{{$key}}[{{$nested_key}}]{{$nested_value}}" value="{{$nested_value}}">
                         @endforeach
                     @else
                         <label for="{{$key}}[first_level]{{$value}}]">{{$key}}</label>
