@@ -56,8 +56,10 @@ class EnsureTokenIsValid
             }
 
         } catch (\Exception $e) {
-            return new JsonResponse(['jwt_error_message' => $e->getMessage()]);
+            report($e->getMessage());
+            return false;
         }
+
 
         return $next($request);
     }
