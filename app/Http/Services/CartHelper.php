@@ -94,7 +94,7 @@ class CartHelper
             foreach ($mapped_variations as $index_v => $mapped_variation) {
 
                 if ($mapped_flavour['id'] === $mapped_variation['flavour_id']) {
-                    $mapped_flavours[$index_f]['flavour_variations'][] = $mapped_variation;
+                    $mapped_flavours[$index_f]['variations'][] = $mapped_variation;
                 }
             }
         }
