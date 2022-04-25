@@ -6,6 +6,13 @@ use Illuminate\Http\Request;
 
 class ImageService
 {
+    private static string $placeholder = '/storage/staticPictures/image_product_placeholder.svg';
+
+
+    public static function getPlaceHolder(Request $request)
+    {
+        return $request->getSchemeAndHttpHost() . self::$placeholder;
+    }
 
     public function transformFromCollection($obj, Request $request)
     {
@@ -26,13 +33,19 @@ class ImageService
     public static function absolutePath($data = null, Request $request)
     {
         $path = $request->getSchemeAndHttpHost();
+
         if (isset($data) && is_object($data)) {
-            return $path . '/storage/' . $data->image;
+            $image = $path . '/storage/' . $data->image;
         } elseif (isset($data) && is_array($data)) {
-            return $path . '/storage/' . $data['image'];
+            $image = $path . '/storage/' . $data['image'];
         } else {
-            return $path . '/storage/' . $data;
+            $image = $path . '/storage/' . $data;
         }
+
+
+        $image = self::checkImageExists($image) !== false ? $image : self::getPlaceHolder($request);
+
+        return $image;
     }
 
     public static function multipleImagesAbsolutePath($data, Request $request)
@@ -45,5 +58,10 @@ class ImageService
         }
 
         return $result;
+    }
+
+    private static function checkImageExists($src): bool
+    {
+        return @getimagesize($src) !== false;
     }
 }
