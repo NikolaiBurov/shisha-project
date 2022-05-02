@@ -48,8 +48,10 @@ class EnsureTokenIsValid
      */
     public function handle(Request $request, Closure $next)
     {
+        $token = !is_null($request->header('jwt_token')) ? $request->header('jwt_token') : getallheaders()['jwt_token'];
+
         try {
-            $decoded_token = $this->cleanToken(JWT::decode(getallheaders()['jwt_token'], new Key($this->key, 'HS256')));
+            $decoded_token = $this->cleanToken(JWT::decode($token, new Key($this->key, 'HS256')));
 
             if (array_diff($decoded_token, $this->payload)) {
                 return new JsonResponse(['jwt_error_message' => 'Token mismatch']);

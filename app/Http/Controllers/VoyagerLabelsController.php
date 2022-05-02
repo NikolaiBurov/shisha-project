@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Session;
 
 class VoyagerLabelsController extends Controller
 {
-    public const INDEX_PATH = '/admin/labels';
+    public const INDEX_PATH = '/labels';
 
     /**
      * @param Request $request
@@ -35,7 +35,7 @@ class VoyagerLabelsController extends Controller
      * value->stands for the corresponding value in json
      * @example
      * first level always contains 'first_level' keyword as the inner key of the array
-     *@example   First level =>
+     * @example   First level =>
      *          "some_first_level_locale" => array:1 [▼
      *              "first_level" => "some_locale_value"
      *            ]
@@ -46,15 +46,15 @@ class VoyagerLabelsController extends Controller
      * Second level contains the actual key which is in  the label
      * @example meta_title => 'Super good meta title'
      * Second Level
-         * "METAS" => array:2 [▼
-                "meta_title" => "meta"
-                "meta_keywords" => "meta"
-        ]
+     * "METAS" => array:2 [▼
+     * "meta_title" => "meta"
+     * "meta_keywords" => "meta"
+     * ]
      * We loop through them and if they are changes we replace them
      */
     public function editLabel(Request $request)
     {
-        $locales = json_decode(file_get_contents(storage_path() . '/labels/labels.json'), true);
+        $locales = $this->forceNoSpaceKeys(json_decode(file_get_contents(storage_path() . '/labels/labels.json'), true));
 
         $request->request->remove('submit');
         $request->request->remove('_token');
@@ -66,6 +66,7 @@ class VoyagerLabelsController extends Controller
             return response()->view('partials/404_page', [], 403);
 
         $changes = $request->all();
+
         foreach ($changes as $first_level => $request_change) {
 
             if (isset($locales[$first_level]) || array_key_exists($first_level, $locales)) {
@@ -73,6 +74,7 @@ class VoyagerLabelsController extends Controller
                 if (!isset($request_change['first_level'])) {
                     //we cycle the second level and check if key from request matches the ones from labels file
                     foreach ($request_change as $second_level => $item) {
+
                         if (isset($locales[$first_level][$second_level])) {
                             $locales[$first_level][$second_level] = $item ?? "";
                         }
@@ -103,5 +105,25 @@ class VoyagerLabelsController extends Controller
 
     }
 
+    /**
+     * @param $labels
+     * @return array
+     * If key has empty spaces transform it
+     */
+    private function forceNoSpaceKeys($labels)
+    {
+        $new_locales = [];
+
+        array_walk($labels, function ($second_level, $first_level) use (&$new_locales) {
+            if (strpbrk($first_level, ' ') !== false) {
+                $new_locales[str_replace(" ", "_", $first_level)] = $second_level;
+            } else {
+                $new_locales[$first_level] = $second_level;
+            }
+        });
+
+        return $new_locales;
+
+    }
 
 }
