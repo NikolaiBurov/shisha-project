@@ -21,7 +21,8 @@ class PublicUser extends Model
         'city',
         'confirmed_email',
         'email_token',
-        'password_reset_token'
+        'password_reset_token',
+        'salt'
     ];
 
     protected $attributes = [
