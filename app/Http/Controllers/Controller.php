@@ -28,6 +28,8 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
+    private array $fields = [];
+
     /**
      * @param PublicUser $users
      * @param Flavour $flavour
@@ -53,5 +55,48 @@ class Controller extends BaseController
         $this->error_service = $errorService;
         $this->cart_helper = $cart_helper;
         $this->translation_helper = $translationsHelper;
+    }
+
+    public function setFields(array $fields): void
+    {
+        $this->fields = $fields;
+    }
+
+    public function getFields(): array
+    {
+        return $this->fields;
+    }
+
+    public function validateFields($given_fields) : array
+    {
+        $response = [];
+
+        $given_fields = $this->checkForNullableValue($given_fields);
+
+        $given_fields = array_values(array_flip($given_fields));
+        $result = array_diff_assoc($this->getFields(), $given_fields);
+
+        if (!empty($result)) {
+            $response =  [
+                'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[3],
+                'data' => null,
+                'error_message' => $this->error_service->handleMissingFields($result)
+            ];
+        }
+
+        return $response;
+    }
+
+    /**
+     * @param array $fields
+     * @return array
+     */
+    private function checkForNullableValue(array $fields)
+    {
+        foreach ($fields as $index => &$field) {
+            $field = is_null($field) ? "" : $field;
+        }
+
+        return $fields;
     }
 }
