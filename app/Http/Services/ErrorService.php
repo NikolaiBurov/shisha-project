@@ -9,6 +9,17 @@ class ErrorService
      */
     private string $errors;
 
+
+    public function handleMissingFields(array $errors)
+    {
+        if (isset($errors)) {
+
+            $stringable_errors = implode(",", $errors);
+
+            return count($errors) > 1 ? 'The fields ' . $stringable_errors . ' are missing' : 'The field ' . $stringable_errors . ' is missing';
+        }
+    }
+
     /**
      * @param array $errors
      * @return string

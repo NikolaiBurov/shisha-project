@@ -44,6 +44,10 @@ Route::middleware([EnsureTokenIsValid::class])->group(function () {
         Route::post('/remove-from-cart', [App\Http\Controllers\CartsApiController::class, 'removeFromCart']);
 
     });
+
+    Route::group(['prefix' => 'contact-us', 'as' => 'contacts.'], function () {
+        Route::post('/add', [App\Http\Controllers\ContactsApiController::class, 'store']);
+    });
 });
 //Route::middleware('auth:api')->get('/user', function (Request $request) {
 //    return $request->user();
