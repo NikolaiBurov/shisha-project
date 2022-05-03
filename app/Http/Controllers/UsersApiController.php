@@ -132,7 +132,7 @@ class UsersApiController extends Controller
             ];
             return new JsonResponse($response);
         }
-        $loaded_user->makeHidden(['password']);
+        $loaded_user->makeHidden(['password','salt']);
 
         if ($loaded_user->password === $password) {
             $response = [
@@ -159,7 +159,7 @@ class UsersApiController extends Controller
      */
     public function registerUser(Request $request): JsonResponse
     {
-        $this->setFields(['username', 'first_name', 'last_name', 'password', 'email_token', 'email', 'password_reset_token', 'city', 'address', 'created_at']);
+        $this->setFields(['username', 'first_name', 'last_name', 'password', 'salt','email_token', 'email', 'password_reset_token', 'city', 'address', 'created_at']);
 
         $user_data = $request->get('user_data');
 
@@ -173,14 +173,14 @@ class UsersApiController extends Controller
         }
 
 
-        $fields = $this->getFields();
-        $new_fields = [];
+            $fields = $this->getFields();
+            $new_fields = [];
 
-        array_walk($fields, function ($a) use (&$new_fields) {
-            $new_fields[$a] = 'present';
-        });
+            array_walk($fields, function ($a) use (&$new_fields) {
+                $new_fields[$a] = 'present';
+            });
 
-        $validate_fields = array_merge($new_fields, ['email' => 'unique:public_users|required', 'username' => 'unique:public_users|required']);
+            $validate_fields = array_merge($new_fields, ['email' => 'unique:public_users|required', 'username' => 'unique:public_users|required']);
 
 
         $validator = Validator::make($user_data, $validate_fields);
@@ -197,6 +197,7 @@ class UsersApiController extends Controller
         try {
             $user = PublicUser::create($user_data);
             unset($user->password);
+            unset($user->salt);
 
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
