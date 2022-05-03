@@ -17,4 +17,9 @@ class FlavourVariation extends Model
     {
         return $this->belongsTo(Flavour::class);
     }
+
+    public function setQuantityAttribute(int $quantity) : void
+    {
+         $this->attributes['quantity'] = $quantity;
+    }
 }
