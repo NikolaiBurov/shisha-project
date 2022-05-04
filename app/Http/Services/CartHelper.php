@@ -50,11 +50,11 @@ class CartHelper
 
             array_walk($flavours, function ($value, $key) use (&$mapped_flavours) {
                 $value['description'] = strip_tags($value['description']);
+                $value['variations'] = [];
                 $mapped_flavours[$key] = $value;
             });
 
         }
-
         return $mapped_flavours;
     }
 
@@ -82,22 +82,23 @@ class CartHelper
      * @param $flavours
      * @param $flavour_variations
      * @param $cart
+     * We get all flavours and by flavour id in variation we sort them out
+     * $mapped_variations()->where , gives us all the result found in the collection
      */
     public function mapProducts($cart, $request)
     {
+
         $mapped_flavours = $this->getMappedFlavours($cart, $request);
-        $mapped_variations = $this->getMappedVariations($cart);
+        $mapped_variations = collect($this->getMappedVariations($cart));
 
-        foreach ($mapped_flavours as $index_f => $mapped_flavour) {
-
-            foreach ($mapped_variations as $index_v => $mapped_variation) {
-
-                if ($mapped_flavour['id'] === $mapped_variation['flavour_id']) {
-                    $mapped_flavours[$index_f]['variations'][] = $mapped_variation;
-                }
+        foreach ($mapped_flavours as $index_f => &$mapped_flavour) {
+            if ($mapped_variations->contains('flavour_id', $mapped_flavour['id'])) {
+                $mapped_flavour['variations'] = $mapped_variations->where('flavour_id', $mapped_flavour['id'])
+                    ->sortBy('id')
+                    ->values()
+                    ->toArray();
             }
         }
-
         return $mapped_flavours;
 
     }
