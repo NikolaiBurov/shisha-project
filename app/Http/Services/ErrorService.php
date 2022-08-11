@@ -13,11 +13,26 @@ class ErrorService
     public function handleMissingFields(array $errors)
     {
         if (isset($errors)) {
-
             $stringable_errors = implode(",", $errors);
 
-            return count($errors) > 1 ? 'The fields ' . $stringable_errors . ' are missing' : 'The field ' . $stringable_errors . ' is missing';
+            return count(
+                $errors
+            ) > 1 ? 'The fields ' . $stringable_errors . ' are missing' : 'The field ' . $stringable_errors . ' is missing';
         }
+    }
+
+    /**
+     * @param array $errors
+     * @return string
+     */
+    public static function combineErrors(array $errors): string
+    {
+        $err = '';
+        foreach ($errors as $item) {
+            $err .= $item . "|";
+        }
+
+        return $err;
     }
 
     /**
@@ -26,6 +41,8 @@ class ErrorService
      */
     public function convertErrors(array $errors = []): string
     {
+        $var = [];
+
         if (isset($errors)) {
             foreach ($errors as $item => $content) {
                 $var[$item] = $item . ":" . implode(",", $content);

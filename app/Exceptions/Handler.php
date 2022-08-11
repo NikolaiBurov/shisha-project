@@ -5,6 +5,8 @@ namespace App\Exceptions;
 use Illuminate\Http\Response;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
+use App\Http\Services\ErrorService;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -39,24 +41,21 @@ class Handler extends ExceptionHandler
             if ($request->is('api/*')) {
                 return response()->json([
                     'status_code' => (new Response())->status(),
-                    'error_message' => $e->getMessage()
+                    'error_message' => isset($e->validator) ? ErrorService::combineErrors(
+                        Arr::flatten($e->validator->messages()->get('*'))
+                    )
+                        : $e->getMessage(),
                 ]);
             }
-        });
-
-        $this->reportable(function (Throwable $e) {
-            //
         });
     }
 
     public function render($request, $e)
     {
         if ($this->isHttpException($e)) {
-
             $statusCode = $e->getStatusCode();
 
-            return response()->make(view('partials/404_page'),$statusCode);
-
+            return response()->make(view('partials/404_page'), $statusCode);
         }
         return parent::render($request, $e);
     }
