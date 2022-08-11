@@ -26,7 +26,13 @@ class ProductsApiController extends Controller
 
         $paginated = $this->flavours->getFlavoursByRequest($request);
 
-        $result = $this->translation_helper->translateFilteredResults($paginated, $request->get('language'), $request, $this->status_codes, $current_page);
+        $result = $this->translation_helper->translateFilteredResults(
+            $paginated,
+            $request->get('language'),
+            $request,
+            $this->status_codes,
+            $current_page
+        );
 
         return new JsonResponse($result);
     }
@@ -99,11 +105,13 @@ class ProductsApiController extends Controller
             ];
             return new JsonResponse($response);
         }
-        $product = $this->translation_helper->languangeMapper($lang,
+        $product = $this->translation_helper->languangeMapper(
+            $lang,
             Flavour::where('id', $flavour_id)
                 ->withTranslations($lang)
                 ->get(),
-            $request);
+            $request
+        );
 
 
         if (is_null($product)) {
@@ -119,13 +127,10 @@ class ProductsApiController extends Controller
         $response = ['status_code' => (new Response())->status(), 'data' => $product, 'error_message' => null];
 
         return new JsonResponse($response);
-
-
     }
 
     public function getAllCategories(Request $request): JsonResponse
     {
-
         /** @var TYPE_NAME $response */
         $response = [];
 
@@ -144,7 +149,6 @@ class ProductsApiController extends Controller
         $response = ['status' => (new Response())->status(), 'data' => $categories, 'error_message' => null];
 
         return new JsonResponse($response);
-
     }
 
 
@@ -182,12 +186,14 @@ class ProductsApiController extends Controller
             ];
             return new JsonResponse($response);
         }
-        $flavours = $this->translation_helper->languangeMapper($lang,
+        $flavours = $this->translation_helper->languangeMapper(
+            $lang,
             Flavour::whereIn('id', $flavour_ids)
                 ->orderBy('id', 'asc')
                 ->withTranslations($lang)
                 ->get(),
-            $request);
+            $request
+        );
 
         if (is_null($flavours)) {
             $response = [
@@ -228,23 +234,31 @@ class ProductsApiController extends Controller
      */
     public function filterFlavours(Request $request): JsonResponse
     {
-
         $request->items_per_page = $request->filled('items_per_page') ? $request->get('items_per_page') : 6;
 
         $current_page = $request->filled('page') ? $request->get('page') : 1;
 
         $flavours = $this->flavours->getFlavoursByRequest($request);
 
-        $result = $this->translation_helper->translateFilteredResults($flavours, $request->get('language'), $request, $this->status_codes, $current_page);
+
+        $result = $this->translation_helper->translateFilteredResults(
+            $flavours,
+            $request->get('language'),
+            $request,
+            $this->status_codes,
+            $current_page
+        );
 
         return new JsonResponse($result);
-
-
     }
 
     public function relatedProducts(Request $request)
     {
-        if (empty($request->get('flavour_type')) || empty($request->get('language')) || empty($request->get('related_flavour_id'))) {
+        if (empty($request->get('flavour_type')) || empty($request->get('language')) || empty(
+            $request->get(
+                'related_flavour_id'
+            )
+            )) {
             $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[3],
                 'error_message' => $this->status_codes->postRequests()->{"406"}['incorrect_Data'],
@@ -252,11 +266,13 @@ class ProductsApiController extends Controller
             ];
             return new JsonResponse($response);
         }
-        $result = $this->translation_helper->languangeMapper($request->get('language'),
+        $result = $this->translation_helper->languangeMapper(
+            $request->get('language'),
             $this->flavours::where('flavour_type', $request->get('flavour_type'))
                 ->where('id', '!=', $request->get('related_flavour_id'))
                 ->orderBy(DB::raw('RAND()'))->get(),
-            $request);
+            $request
+        );
 
         if (empty($result)) {
             $response = [

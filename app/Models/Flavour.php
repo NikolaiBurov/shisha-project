@@ -22,14 +22,14 @@ class Flavour extends Model
     /**
      * Get all of the variations for the flavour.
      */
-    public function variations()
+    public function flavourVariations()
     {
         return $this->hasMany(FlavourVariation::class, 'flavour_id');
     }
 
     public function getFlavoursByRequest(Request $request)
     {
-        return $this::with(['variations' => function ($query) use ($request) {
+        return $this::with(['flavourVariations' => function ($query) use ($request) {
 
             if ($request->filled('price_from')) {
                 $query->where('price', '>', $request->get('price_from'));
@@ -39,7 +39,7 @@ class Flavour extends Model
             }
             return $query;
         }])
-            ->whereHas('variations', function ($query) use ($request) {
+            ->whereHas('flavourVariations', function ($query) use ($request) {
                 if ($request->filled('price_from')) {
                     $query->where('price', '>', $request->get('price_from'));
                 }
