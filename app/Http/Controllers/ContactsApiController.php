@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Contact;
 use Illuminate\Http\Request;
+use App\Http\Requests\ContactPostRequest;
 
 class ContactsApiController extends Controller
 {
@@ -13,28 +14,19 @@ class ContactsApiController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, Contact $model)
+    public function store(ContactPostRequest $contactRequest)
     {
-        $this->setFields(['title', 'description', 'email']);
-        $api_fields = $request->all();
-
-        unset($api_fields['url']);
-
-        if (!empty($errors = $this->validateFields($api_fields))) {
-            return $errors;
-        }
-
+        //todo Make a response class
         try {
-            $contact = $model::create($api_fields);
+            $contact = Contact::create($contactRequest->onlyInRules());
 
-            $response =  [
+            $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
                 'data' => $contact,
                 'error_message' => null
             ];
-
         } catch (\Exception $e) {
-           $response =  [
+            $response = [
                 'status_code' => array_keys(get_object_vars($this->status_codes->postRequests()))[0],
                 'data' => null,
                 'error_message' => $e->getMessage()
@@ -42,7 +34,6 @@ class ContactsApiController extends Controller
         }
 
         return $response;
-
     }
 
     /**

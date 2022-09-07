@@ -2,7 +2,11 @@
 
 namespace App\Exceptions;
 
+use Illuminate\Http\Response;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
+use App\Http\Services\ErrorService;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -33,31 +37,25 @@ class Handler extends ExceptionHandler
      */
     public function register()
     {
-        $this->renderable(function (\Throwable $e, $request) {
+        $this->renderable(function (\Throwable $e, Request $request) {
             if ($request->is('api/*')) {
                 return response()->json([
-                    'message' => 'Verification Failed'
-                ], 404);
+                    'status_code' => (new Response())->status(),
+                    'error_message' => isset($e->validator) ? ErrorService::combineErrors(
+                        Arr::flatten($e->validator->messages()->get('*'))
+                    )
+                        : $e->getMessage(),
+                ]);
             }
-        });
-
-        $this->reportable(function (Throwable $e) {
-            //
         });
     }
 
     public function render($request, $e)
     {
         if ($this->isHttpException($e)) {
-
             $statusCode = $e->getStatusCode();
 
-            return response()->make(view('partials/404_page'),$statusCode);
-
-//            return match ($statusCode) {
-//                404 => response()->make(view('partials/404_page'),$statusCode),
-//                default =>  response()->make(view('partials/404_page'),$statusCode)
-//            };
+            return response()->make(view('partials/404_page'), $statusCode);
         }
         return parent::render($request, $e);
     }

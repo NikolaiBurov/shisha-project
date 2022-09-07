@@ -3,6 +3,7 @@
 [![N|Solid](https://img.shields.io/badge/Build-VER1.0-Greeb)](https://github.com/NikolaiBurov/ShishaProject/tree/develop)
 
 ### ShishaProject is a private e-commerce project
+### Project is being run under the PHP8.1 version
 
 [ASP.NET part of the project](https://github.com/SvetlinNikolov/Shisha)
 ## Installation

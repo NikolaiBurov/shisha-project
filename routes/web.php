@@ -14,24 +14,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Route::get('/', function () {
-//     return view('forbidden');
-// });
 
 Route::get('/', [App\Http\Controllers\HomeController::class, 'forbidden'])->name('forbidden');
-
-//Auth::routes();
-
-
-
-// Route::get('/', function () {
-//     return view('/home');
-// });
 
 
 Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();
     Route::get('/labels', [VoyagerLabelsController::class, 'index'])->name('voyager_labels')->middleware('labels');;
     Route::post('/labels-edit', [VoyagerLabelsController::class, 'editLabel'])->name('voyager_labels_edit');
-
 });
