@@ -4,9 +4,10 @@ namespace App\Http\Constants;
 
 class StatusCodes
 {
+    public const OK = 200;
+
     public function postRequests($data = null)
     {
-
         return (object)[
             '200' => [
                 'OK' => 'OK',
@@ -30,7 +31,7 @@ class StatusCodes
                 'flavour_variation_exists' => 'Flavour variation with such id does not exist',
                 'wrong_variation' => 'Given variation id  is not matching given flavour',
                 'cart_exists' => 'Cart does not exists',
-                'cart_entity_deleted' =>  isset($data) ? "Cart record with id {$data['id']}  was deleted" : "",
+                'cart_entity_deleted' => isset($data) ? "Cart record with id {$data['id']}  was deleted" : "",
                 'no_products' => 'No products were found',
                 'non_existent_user_email_token' => 'User with such email token doesnt exist',
             ],

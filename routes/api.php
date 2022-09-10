@@ -42,7 +42,7 @@ Route::middleware([EnsureTokenIsValid::class])->group(function () {
         Route::post('/get-cart', [App\Http\Controllers\CartsApiController::class, 'getCart']);
         Route::post('/add-to-cart', [App\Http\Controllers\CartsApiController::class, 'addToCart']);
         Route::post('/remove-from-cart', [App\Http\Controllers\CartsApiController::class, 'removeFromCart']);
-
+        Route::post('/get-cart-quantity', [App\Http\Controllers\CartsApiController::class, 'getCartQuantity']);
     });
 
     Route::group(['prefix' => 'contact-us', 'as' => 'contacts.'], function () {
