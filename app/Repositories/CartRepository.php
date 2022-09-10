@@ -9,12 +9,23 @@ use Illuminate\Support\Facades\Cache;
 
 class CartRepository
 {
+    /**
+     * @var string
+     */
+    private string $cacheKey;
+
     public function findProductsInCartQuantity(int $userID): int
     {
-        //maybe cache this query
-        return Cart::query()
-            ->where('user_id', $userID)
-            ->count();
+        $this->cacheKey = 'userID_' . $userID;
+
+        Cache::rememberForever($this->cacheKey, function () use ($userID) {
+            return Cart::query()
+                ->where('user_id', $userID)
+                ->count();
+        });
+
+        return Cache::get($this->cacheKey);
     }
 }
+
 

@@ -20,7 +20,10 @@ class EventServiceProvider extends ServiceProvider
         ],
         'App\Events\NewUser' => [
             'App\Listeners\SendNotificationMail'
-        ]
+        ],
+        'App\Events\Cart\Update' => [
+            'App\Listeners\Cart\RemoveCartCache'
+        ],
     ];
 
     /**
