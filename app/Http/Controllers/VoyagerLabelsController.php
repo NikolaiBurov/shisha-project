@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Session;
 
 class VoyagerLabelsController extends Controller
 {
-    public const INDEX_PATH = '/labels';
+    public const INDEX_PATH = '/admin/labels';
 
     /**
      * @param Request $request
