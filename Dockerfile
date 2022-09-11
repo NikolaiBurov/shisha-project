@@ -25,7 +25,10 @@ RUN apt update && apt install -y \
     && docker-php-ext-install pdo_mysql \
     && docker-php-ext-install mysqli \
     && docker-php-ext-install zip \
-    && docker-php-source delete
+    && docker-php-source delete\
+    && docker-php-ext-install exif \
+    && docker-php-ext-enable exif
+
 
 COPY .docker/vhost.conf /etc/apache2/sites-available/000-default.conf
 COPY .env  /var/www/html
