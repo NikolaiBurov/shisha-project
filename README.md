@@ -6,7 +6,18 @@
 ### Project is being run under the PHP8.1 version
 
 [ASP.NET part of the project](https://github.com/SvetlinNikolov/Shisha)
-## Installation
+## Docker Installation
+
+Install docker on machine 
+
+Run:
+
+    docker compose build
+
+    docker compose up -d
+
+
+## Manual Installation
 
 ```bash
 
