@@ -33,8 +33,12 @@ Route::middleware([EnsureTokenIsValid::class])->group(function () {
         Route::post('/register-user', [App\Http\Controllers\UsersApiController::class, 'registerUser']);
         Route::post('/login-user', [App\Http\Controllers\UsersApiController::class, 'loginUser']);
         Route::put('/update-user', [App\Http\Controllers\UsersApiController::class, 'updateUser']);
-        Route::post('/get-user-by-email-or-username', [App\Http\Controllers\UsersApiController::class, 'getUserByEmailOrUsername']);
-        Route::post('/get-user-by-email-token', [App\Http\Controllers\UsersApiController::class, 'getUserByEmailToken']);
+        Route::post(
+            '/get-user-by-email-or-username',
+            [App\Http\Controllers\UsersApiController::class, 'getUserByEmailOrUsername']
+        );
+        Route::post('/get-user-by-email-token', [App\Http\Controllers\UsersApiController::class, 'getUserByEmailToken']
+        );
     });
 
 //Cart Endpoints
@@ -47,6 +51,10 @@ Route::middleware([EnsureTokenIsValid::class])->group(function () {
 
     Route::group(['prefix' => 'contact-us', 'as' => 'contacts.'], function () {
         Route::post('/add', [App\Http\Controllers\ContactsApiController::class, 'store']);
+    });
+
+    Route::group(['prefix' => 'search', 'as' => 'search.'], function () {
+        Route::post('/', [App\Http\Controllers\SearchApiController::class, 'search']);
     });
 });
 //Route::middleware('auth:api')->get('/user', function (Request $request) {
