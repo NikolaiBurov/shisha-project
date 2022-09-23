@@ -16,7 +16,7 @@ class FlavourSeeder extends Seeder
     {
         if (Flavour::count() == 0) {
             Flavour::create([
-                'title' => 'black nigger',
+                'title' => 'African Queen',
                 'description' => 'test',
                 'short_description' => "test",
                 'image' => "storage/app/public/statisPictures/image_product_placeholder.svg",
@@ -26,7 +26,7 @@ class FlavourSeeder extends Seeder
             ]);
 
             Flavour::create([
-                'title' => 'black nigger2',
+                'title' => 'Dark Mamba',
                 'description' => 'test',
                 'short_description' => "test",
                 'image' => "storage/app/public/statisPictures/image_product_placeholder.svg",
@@ -35,7 +35,7 @@ class FlavourSeeder extends Seeder
                 'flavour_type' => 'sorrow'
             ]);
             Flavour::create([
-                'title' => 'black nigger3',
+                'title' => 'Fruit Juice',
                 'description' => 'test',
                 'short_description' => "test",
                 'image' => "storage/app/public/statisPictures/image_product_placeholder.svg",
@@ -44,7 +44,7 @@ class FlavourSeeder extends Seeder
                 'flavour_type' => 'sorrow'
             ]);
             Flavour::create([
-                'title' => 'black nigger4',
+                'title' => 'Ice Bonbon',
                 'description' => 'test',
                 'short_description' => "test",
                 'image' => "storage/app/public/statisPictures/image_product_placeholder.svg",
