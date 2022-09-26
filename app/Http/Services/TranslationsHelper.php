@@ -77,7 +77,6 @@ class TranslationsHelper
                 $language,
                 'bg'
             );
-            $filters[$index]['image'] = ImageService::absolutePath($filters[$index]['image'], $request);
         }
 
         $result = $this->paginateFilters($filters, $current_page, $statusCodes);

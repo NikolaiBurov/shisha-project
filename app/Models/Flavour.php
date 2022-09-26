@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Services\ImageService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -54,6 +55,14 @@ class Flavour extends Model
     public function getCategoryId()
     {
         return $this->attributes['category_id'];
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getImageAttribute(): ?string
+    {
+        return ImageService::absolutePath($this->attributes['image'], Request::capture());
     }
 
     /**
