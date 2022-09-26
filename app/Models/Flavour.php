@@ -62,7 +62,7 @@ class Flavour extends Model
      */
     public function getImageAttribute(): ?string
     {
-        return ImageService::absolutePath($this->attributes['image'], Request::capture());
+        return ImageService::absolutePath($this->attributes['image'] ?? '' , Request::capture());
     }
 
     /**
