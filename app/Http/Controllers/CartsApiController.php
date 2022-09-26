@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CartQuantityRequest;
+use App\Models\Category;
 use App\Models\Flavour;
 use App\Models\FlavourVariation;
 use App\Repositories\CartRepository;
-use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Services\ErrorService;
@@ -17,7 +17,7 @@ use App\Http\Services\CartHelper;
 use Illuminate\Support\Facades\Validator;
 
 
-class CartsApiController extends BaseController
+class CartsApiController extends BaseApiController
 {
     private PublicUser $users;
 
@@ -359,21 +359,7 @@ class CartsApiController extends BaseController
 
         $quantity = $this->cartRepository->findProductsInCartQuantity($user->id);
 
-        return $this->buildResult($this->statusCodes::OK, null, $quantity);
+        return $this->buildResult($this->statusCodes::HTTP_OK, null, $quantity);
     }
 
-    /**
-     * @param int $statusCode
-     * @param string|null $errorMessage
-     * @param string|null $data
-     * @return JsonResponse
-     */
-    private function buildResult(int $statusCode, ?string $errorMessage = null, ?string $data = null): JsonResponse
-    {
-        return new JsonResponse([
-            'status_code ' => $statusCode,
-            'error_message' => $errorMessage,
-            'data' => $data,
-        ]);
-    }
 }

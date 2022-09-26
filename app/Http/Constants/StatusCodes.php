@@ -2,10 +2,10 @@
 
 namespace App\Http\Constants;
 
-class StatusCodes
-{
-    public const OK = 200;
+use Illuminate\Http\Response;
 
+class StatusCodes extends Response
+{
     public function postRequests($data = null)
     {
         return (object)[
