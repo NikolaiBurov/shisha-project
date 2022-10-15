@@ -14,15 +14,21 @@ class CartRepository
      */
     private string $cacheKey;
 
+    /**
+     * @param int $userID
+     * @return int
+     */
     public function findProductsInCartQuantity(int $userID): int
     {
         $this->cacheKey = 'userID_' . $userID;
 
-        Cache::rememberForever($this->cacheKey, function () use ($userID) {
-            return Cart::query()
-                ->where('user_id', $userID)
-                ->count();
-        });
+        if (!Cache::get($this->cacheKey)) {
+            Cache::rememberForever($this->cacheKey, function () use ($userID) {
+                return Cart::query()
+                    ->where('user_id', $userID)
+                    ->count();
+            });
+        }
 
         return Cache::get($this->cacheKey);
     }
