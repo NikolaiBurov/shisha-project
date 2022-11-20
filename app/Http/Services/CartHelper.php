@@ -50,7 +50,7 @@ class CartHelper
 
             array_walk($flavours, function ($value, $key) use (&$mapped_flavours) {
                 $value['description'] = strip_tags($value['description']);
-                $value['variations'] = [];
+                $value['flavour_variations'] = [];
                 $mapped_flavours[$key] = $value;
             });
 
