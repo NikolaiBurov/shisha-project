@@ -93,7 +93,7 @@ class CartHelper
 
         foreach ($mapped_flavours as $index_f => &$mapped_flavour) {
             if ($mapped_variations->contains('flavour_id', $mapped_flavour['id'])) {
-                $mapped_flavour['variations'] = $mapped_variations->where('flavour_id', $mapped_flavour['id'])
+                $mapped_flavour['flavour_variations'] = $mapped_variations->where('flavour_id', $mapped_flavour['id'])
                     ->sortBy('id')
                     ->values()
                     ->toArray();
