@@ -133,53 +133,38 @@ class UsersApiController extends BaseApiController
      */
     public function loginUser(Request $request): JsonResponse
     {
-        $field = $request->get('username_or_email');
+        $email = $request->get('email');
 
         $password = $request->get('password');
 
-        if (empty($field) || empty($password)) {
-            $response = [
-                'status_code' => array_keys(get_object_vars($this->statusCodes->postRequests()))[3],
-                'error_message' => $this->statusCodes->postRequests()->{"406"}['incorrect_Data'],
-                'data' => null
-            ];
-            return new JsonResponse($response);
+        if (empty($email) || empty($password)) {
+            return $this->buildResult(
+                array_keys(get_object_vars($this->statusCodes->postRequests()))[3],
+                $this->statusCodes->postRequests()->{"406"}['incorrect_Data'],
+            );
         }
 
-        $query = $this->userModel::query();
-
-        if (filter_var($field, FILTER_VALIDATE_EMAIL)) {
-            $query = $query->where('email', $field);
-        } else {
-            $query = $query->where('username', $field);
-        }
-
-        $loaded_user = $query->first();
+        $loaded_user = $this->userModel::whereEmail($email)->first();
 
         if (empty($loaded_user)) {
-            $response = [
-                'status_code' => array_keys(get_object_vars($this->statusCodes->postRequests()))[4],
-                'error_message' => $this->statusCodes->postRequests()->{"200"}['non_existent_user'],
-                'data' => null
-            ];
-            return new JsonResponse($response);
+            return $this->buildResult(
+                StatusCodes::HTTP_NOT_FOUND,
+                $this->statusCodes->postRequests()->{"200"}['non_existent_user'],
+            );
         }
         $loaded_user->makeHidden(['password', 'salt']);
 
         if ($loaded_user->password === $password) {
-            $response = [
-                'status_code' => array_keys(get_object_vars($this->statusCodes->postRequests()))[0],
-                'data' => $loaded_user,
-                'error_message' => null
-            ];
-            return new JsonResponse($response);
+            return $this->buildResult(
+                StatusCodes::HTTP_OK,
+                null,
+                $loaded_user
+            );
         } else {
-            $response = [
-                'status_code' => array_keys(get_object_vars($this->statusCodes->postRequests()))[1],
-                'error_message' => $this->statusCodes->postRequests()->{"200"}['incorrect_password'],
-                'data' => null
-            ];
-            return new JsonResponse($response);
+            return $this->buildResult(
+                StatusCodes::HTTP_NOT_FOUND,
+                $this->statusCodes->postRequests()->{"200"}['incorrect_password'],
+            );
         }
     }
 
