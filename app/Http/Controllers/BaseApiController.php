@@ -16,7 +16,7 @@ class BaseApiController extends BaseController
     public function buildResult(int $statusCode, ?string $errorMessage = null, mixed $data = null): JsonResponse
     {
         return new JsonResponse([
-            'status_code ' => $statusCode,
+            'status_code' => $statusCode,
             'error_message' => $errorMessage,
             'data' => $data,
         ]);
